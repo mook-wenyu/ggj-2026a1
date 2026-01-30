@@ -1,0 +1,687 @@
+﻿{
+  "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[BaseConfig, Assembly-CSharp]], mscorlib",
+  "Test": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Test",
+    "langKey": "en",
+    "id": "Test"
+  },
+  "Info": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Info",
+    "langKey": "en",
+    "id": "Info"
+  },
+  "identity_1001": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You are a fanatic cultist.\n The altar flames flicker. The tape plays—twenty minutes of a secret gathering from ten years ago.\n Under a dead tree, you all chant praises to “Bastet,” waiting for Her grand arrival.\n Then the sky tears open, rain drowns the candles, and you shout, “SHE’s here!”\n When that strange thing actually appeared before you, you forgot whether you were a believer… or an offering.\n",
+    "langKey": "en",
+    "id": "identity_1001"
+  },
+  "identity_1002": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You are a reclusive fisherman.\n You always cast your line into the dried-up well by your house.\n There’s no water—only breathing.You tell yourself that sound is your life’s greatest catch.\n When the sharp-toothed fish finally bit, you called a few buddies to help haul it up.\n Now its skeleton hangs under your eaves—a trophy, proof that obsession sometimes wins.\n",
+    "langKey": "en",
+    "id": "identity_1002"
+  },
+  "identity_1003": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You are a sharp-eyed hunter.\n Your battered military backpack is packed with guns and traps.\n Your fur-covered dining table reeks of animal blood.\n Under a dead tree, your bullet goes straight through a deer’s skull. You rush over, thrilled—only to find a man holding a fishing rod.\n",
+    "langKey": "en",
+    "id": "identity_1003"
+  },
+  "identity_1004": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You are a restless ghost.\n The clock in your room froze at the moment you died.\n Shattered mirror shards stick out from the floor—and from your police uniform.\n That night, someone in a black robe took the videotape from your desk.\n You reached out to stop them, but your hand passed right through.\n",
+    "langKey": "en",
+    "id": "identity_1004"
+  },
+  "identity_1005": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You are a failed terrorist.\n That day, your backpack was supposed to hold a bomb. You were ready to go out with fireworks.\n You stood before the space terminal, watching the clock hit zero. Nothing happened.\n The next day, every major news outlet screamed about a local police station bombing.\n History pivoted at that moment—just not the way you planned.\n",
+    "langKey": "en",
+    "id": "identity_1005"
+  },
+  "identity_1006": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You are a ocean baby.\n Born and raised in a fish tank. Goldfish were your friends, shells your toys.\n You never breathed air until the explosion shattered your world.\n Then came a voice—ancient, godlike—calling your name. You couldn’t understand it.\n You lay on the bathroom tiles, watching your goldfish leap into the bathtub.\n",
+    "langKey": "en",
+    "id": "identity_1006"
+  },
+  "identity_1007": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You are a freedom-loving goldfish.\n When they pulled you from the well, algae still clung to your scales.The fish tank was only a temporary cell. SHE gave you freedom.\n After the explosion, you dove into the drain, swam through rivers and groundwater, and found the kingdom of caves.\n Now your bones hang under the eaves, waiting for the next cycle.\n",
+    "langKey": "en",
+    "id": "identity_1007"
+  },
+  "identity_1008": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You are a microscopic leech.\n For as long as you remember, you’ve lived inside others.\n The well is your nest, the dining table your feast, the bathtub blood your mother’s womb.\n You recall jumping from one living clock to another, feeding on their time.\n You never had a body of your own—but you ended a civilization.\n",
+    "langKey": "en",
+    "id": "identity_1008"
+  },
+  "identity_1009": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You are an alien cat.\n You came to Earth disguised as a harmless pet. No one knew you were plotting revenge.\n Two thousand years later, your descendants ruled the galaxy. Humans became your pets. Catkind entered its golden age.\n Even on your deathbed, you remembered that little beetle you loved—the one a human crushed with a slipper.\n",
+    "langKey": "en",
+    "id": "identity_1009"
+  },
+  "identity_1010": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You are a happy dung beetle.\n The mud by the pond is your kingdom, the garden your paradise.\n You hum songs while rolling your precious dung balls—rich, nutritious, beautiful.\n You’ve seen countless friends flattened into pulp,\n and though you swore to avoid humans, fate still brought you under a slipper.\n",
+    "langKey": "en",
+    "id": "identity_1010"
+  },
+  "identity_1011": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You are a pica freak.\n Cat food, crunchy beetles, chewy mud—gastronomic masterpieces!\n You don’t bother hiding. Nothing beats a post-meal snack in plain sight.\n You grab another beetle and smack your lips.Five stars. Would eat again.\n",
+    "langKey": "en",
+    "id": "identity_1011"
+  },
+  "identity_1012": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You are a collector.\n A century after the evil Cat Cult fell, you still gather fragments of that era.\n You’ve visited every site, cataloged every clue, reconstructed it all.\n The time has come to summon “Bastet” once again.",
+    "langKey": "en",
+    "id": "identity_1012"
+  },
+  "identity_1013": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You're Someone Else’s Dream.\nYou were never meant to be here.Every object you touch is a remnant of someone else, not your own memory.\nWhen you try to piece them together, they slip through your fingers and return to their rightful places.\nThe space rejects you. You leave with nothing.",
+    "langKey": "en",
+    "id": "identity_1013"
+  },
+  "memory_1001": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "On the screen, the altar flames leap wildly, chants rising and falling. \u000bYou sit cross-legged on the floor, your gaze fixed on the secret gathering as if you were among them. \u000b",
+    "langKey": "en",
+    "id": "memory_1001"
+  },
+  "memory_1002": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "That rusted, battered bathtub is the thing you’ve seen most often. \u000b",
+    "langKey": "en",
+    "id": "memory_1002"
+  },
+  "memory_1003": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Flames rise in the footage; candles crowd the altar as the crowd chants in unison.\u000b",
+    "langKey": "en",
+    "id": "memory_1003"
+  },
+  "memory_1004": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Your reflection splinters into countless fragments in the cracked mirror. \u000bThe explosion from that night still echoes in your ears. \u000b",
+    "langKey": "en",
+    "id": "memory_1004"
+  },
+  "memory_1005": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "The wind at the well’s edge chills to the bone. \u000bYou grip the rod tightly; under that pulling force, it lets out a sharp crack..\n",
+    "langKey": "en",
+    "id": "memory_1005"
+  },
+  "memory_1006": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "An open backpack lies on the table, revealing animal pelts; blood seeps into the wood grain. \u000bYou recall that banquet night—no one noticed the shadow quietly writhing in the corner.\n",
+    "langKey": "en",
+    "id": "memory_1006"
+  },
+  "memory_1007": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "The hands are forever frozen at that moment.You remember the explosion never happened—yet time collapsed here.\u000b",
+    "langKey": "en",
+    "id": "memory_1007"
+  },
+  "memory_1008": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "The explosion sounds; water drips from the cabinet’s edge.\u000bYou lie by the shattered glass, breathing air for the first time, your lungs sliced by pain. \u000b",
+    "langKey": "en",
+    "id": "memory_1008"
+  },
+  "memory_1009": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "The flame flickers, and runic shadows dance across the wall. \u000bYou remember kneeling before a statue, eyes closed, listening to a distant whisper—\u000b",
+    "langKey": "en",
+    "id": "memory_1009"
+  },
+  "memory_1010": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "An opened can sits before you, the smell strong and raw.\u000bIt’s your first time eating this. You crouch on the floor, chewing silently. \u000b",
+    "langKey": "en",
+    "id": "memory_1010"
+  },
+  "memory_1011": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Leaning against the trunk, you take ammunition from your worn backpack. \u000bThrough the scope, the prey’s shape blurs. \u000b",
+    "langKey": "en",
+    "id": "memory_1011"
+  },
+  "memory_1012": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You scoop up a handful of damp earth; its scent soothes you. \u000bThis is the only place you ever called “home.” \u000b",
+    "langKey": "en",
+    "id": "memory_1012"
+  },
+  "memory_1013": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You stand before the fallen wreckage, look up at the sky, and feel a strange pull—nostalgia, almost. \u000b",
+    "langKey": "en",
+    "id": "memory_1013"
+  },
+  "memory_1014": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You push the dung ball slowly forward; footprints trample the path behind you.\u000b",
+    "langKey": "en",
+    "id": "memory_1014"
+  },
+  "memory_1015": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Cold air seeps through the cracks in the well’s wall. You remember whispering here—SHE answered. \u000b",
+    "langKey": "en",
+    "id": "memory_1015"
+  },
+  "memory_1016": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You unzip the bag; cold metal gleams in the night. \u000bYou check your weapon, count the powder—every motion smooth, practiced.\u000b",
+    "langKey": "en",
+    "id": "memory_1016"
+  },
+  "memory_1017": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You lie beside a pile of shells, listening to the waves. \u000bThe sea breeze fills your lungs, dizzying you. \u000b",
+    "langKey": "en",
+    "id": "memory_1017"
+  },
+  "memory_1018": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "The beetle lies trembling in the dirt, near death.",
+    "langKey": "en",
+    "id": "memory_1018"
+  },
+  "memory_1019": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You stand beneath the massive fish bones, gazing at the night sky. \nIt was once your conquest, and your dependence. \n",
+    "langKey": "en",
+    "id": "memory_1019"
+  },
+  "memory_1020": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You touch the statue’s eyes; a warm pulse beats within the stone, like a heart. ",
+    "langKey": "en",
+    "id": "memory_1020"
+  },
+  "yes_1001": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Chant along\n",
+    "langKey": "en",
+    "id": "yes_1001"
+  },
+  "no_1001": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Turn off \n",
+    "langKey": "en",
+    "id": "no_1001"
+  },
+  "yes_1002": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Feel drawn\n",
+    "langKey": "en",
+    "id": "yes_1002"
+  },
+  "no_1002": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Not interested",
+    "langKey": "en",
+    "id": "no_1002"
+  },
+  "yes_1003": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Take it out\n",
+    "langKey": "en",
+    "id": "yes_1003"
+  },
+  "no_1003": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Watch it again\n",
+    "langKey": "en",
+    "id": "no_1003"
+  },
+  "yes_1004": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Touch the mirror",
+    "langKey": "en",
+    "id": "yes_1004"
+  },
+  "no_1004": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Turn away",
+    "langKey": "en",
+    "id": "no_1004"
+  },
+  "yes_1005": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Call for help",
+    "langKey": "en",
+    "id": "yes_1005"
+  },
+  "no_1005": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Let go",
+    "langKey": "en",
+    "id": "no_1005"
+  },
+  "yes_1006": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": " Sit down",
+    "langKey": "en",
+    "id": "yes_1006"
+  },
+  "no_1006": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Leave quietly",
+    "langKey": "en",
+    "id": "no_1006"
+  },
+  "yes_1007": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Take it ",
+    "langKey": "en",
+    "id": "yes_1007"
+  },
+  "no_1007": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Broke it",
+    "langKey": "en",
+    "id": "no_1007"
+  },
+  "yes_1008": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Follow the fish",
+    "langKey": "en",
+    "id": "yes_1008"
+  },
+  "no_1008": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Stay there",
+    "langKey": "en",
+    "id": "no_1008"
+  },
+  "yes_1009": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Chant back",
+    "langKey": "en",
+    "id": "yes_1009"
+  },
+  "no_1009": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Blow it out",
+    "langKey": "en",
+    "id": "no_1009"
+  },
+  "yes_1010": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Eat it",
+    "langKey": "en",
+    "id": "yes_1010"
+  },
+  "no_1010": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Look around",
+    "langKey": "en",
+    "id": "no_1010"
+  },
+  "yes_1011": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Pull the trigger",
+    "langKey": "en",
+    "id": "yes_1011"
+  },
+  "no_1011": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Lower the gun",
+    "langKey": "en",
+    "id": "no_1011"
+  },
+  "yes_1012": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Squeeze it",
+    "langKey": "en",
+    "id": "yes_1012"
+  },
+  "no_1012": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Put it back",
+    "langKey": "en",
+    "id": "no_1012"
+  },
+  "yes_1013": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Turn on",
+    "langKey": "en",
+    "id": "yes_1013"
+  },
+  "no_1013": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Do nothing",
+    "langKey": "en",
+    "id": "no_1013"
+  },
+  "yes_1014": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": " Keep going",
+    "langKey": "en",
+    "id": "yes_1014"
+  },
+  "no_1014": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Hide in the mud",
+    "langKey": "en",
+    "id": "no_1014"
+  },
+  "yes_1015": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Drop the line",
+    "langKey": "en",
+    "id": "yes_1015"
+  },
+  "no_1015": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Lean in and listen",
+    "langKey": "en",
+    "id": "no_1015"
+  },
+  "yes_1016": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Take bullets",
+    "langKey": "en",
+    "id": "yes_1016"
+  },
+  "no_1016": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Close the bag",
+    "langKey": "en",
+    "id": "no_1016"
+  },
+  "yes_1017": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Pick up one",
+    "langKey": "en",
+    "id": "yes_1017"
+  },
+  "no_1017": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Walk away",
+    "langKey": "en",
+    "id": "no_1017"
+  },
+  "yes_1018": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Stroke it",
+    "langKey": "en",
+    "id": "yes_1018"
+  },
+  "no_1018": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Crush it",
+    "langKey": "en",
+    "id": "no_1018"
+  },
+  "yes_1019": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Touch them",
+    "langKey": "en",
+    "id": "yes_1019"
+  },
+  "no_1019": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Walk away",
+    "langKey": "en",
+    "id": "no_1019"
+  },
+  "yes_1020": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Sing the hymn",
+    "langKey": "en",
+    "id": "yes_1020"
+  },
+  "no_1020": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Turn away",
+    "langKey": "en",
+    "id": "no_1020"
+  },
+  "start_1001": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You wake up in a place that makes no sense.\nYour head is pounding, you can’t remember anything, don’t even know who you are, or why you’re here.\nYou feel scared and confused, don’t you?\nMaybe this place is your home, even if you have no memory of it.\nMaybe you should look around.Check the objects nearby, try to collect the pieces of your lost memory.",
+    "langKey": "en",
+    "id": "start_1001"
+  },
+  "confirm_1001": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Confirm choices",
+    "langKey": "en",
+    "id": "confirm_1001"
+  },
+  "click_1001": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Click to continue",
+    "langKey": "en",
+    "id": "click_1001"
+  },
+  "Tips_1001": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "When memories connect,\nthe related objects turn to color.",
+    "langKey": "en",
+    "id": "Tips_1001"
+  },
+  "Tips_1002": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Click an object to edit or delete it.",
+    "langKey": "en",
+    "id": "Tips_1002"
+  },
+  "Tips_1003": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Click on empty space to close.",
+    "langKey": "en",
+    "id": "Tips_1003"
+  },
+  "Question_1001": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "The flickering firelight casts the shadow of a massive fish skeleton on the wall behind you.",
+    "langKey": "en",
+    "id": "Question_1001"
+  },
+  "Question_1002": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Though always distorted by the warped glass of the fish tank, it is what your companions yearn for—the exit that leads to freedom.",
+    "langKey": "en",
+    "id": "Question_1002"
+  },
+  "Question_1003": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You know the twenty-minute clip has been banned for years, yet your hand still presses “play” with practiced ease.",
+    "langKey": "en",
+    "id": "Question_1003"
+  },
+  "Question_1004": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You see blood on your torn uniform—and the mangled body. Death never left this place.",
+    "langKey": "en",
+    "id": "Question_1004"
+  },
+  "Question_1005": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "When the sharp-toothed fish finally breaks the surface, your fingers are almost numb.",
+    "langKey": "en",
+    "id": "Question_1005"
+  },
+  "Question_1006": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Someone raised a toast; your heartbeat quickened.",
+    "langKey": "en",
+    "id": "Question_1006"
+  },
+  "Question_1007": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Chanting drifts from behind you; you stand motionless, pinned by an unseen force.",
+    "langKey": "en",
+    "id": "Question_1007"
+  },
+  "Question_1008": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Your best friend struggles toward the bathtub—you reach out too.",
+    "langKey": "en",
+    "id": "Question_1008"
+  },
+  "Question_1009": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "it was Her voice, calling to you.",
+    "langKey": "en",
+    "id": "Question_1009"
+  },
+  "Question_1010": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "They think you’re simply hungry.",
+    "langKey": "en",
+    "id": "Question_1010"
+  },
+  "Question_1011": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Your fingers tremble with excitement. That shot changed everything.",
+    "langKey": "en",
+    "id": "Question_1011"
+  },
+  "Question_1012": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "A beetle crawls out—you can’t wait to make it part of yourself.",
+    "langKey": "en",
+    "id": "Question_1012"
+  },
+  "Question_1013": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You once waited here for the explosion that would shatter the terminal, but nothing happened.",
+    "langKey": "en",
+    "id": "Question_1013"
+  },
+  "Question_1014": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Humming as usual, you don’t notice the shadow creeping overhead.",
+    "langKey": "en",
+    "id": "Question_1014"
+  },
+  "Question_1015": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "One night, breathing echoed from the depths, and every hair on your body stood on end.",
+    "langKey": "en",
+    "id": "Question_1015"
+  },
+  "Question_1016": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "That day, under the withered tree, your sights weren’t aimed at a beast.",
+    "langKey": "en",
+    "id": "Question_1016"
+  },
+  "Question_1017": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You don’t belong here, yet the ocean feels strangely familiar.",
+    "langKey": "en",
+    "id": "Question_1017"
+  },
+  "Question_1018": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You’ve always hidden it in your shadow—it was your first companion, killed under a human’s heel.",
+    "langKey": "en",
+    "id": "Question_1018"
+  },
+  "Question_1019": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "The bones hum softly in the wind, as if awaiting your reply.",
+    "langKey": "en",
+    "id": "Question_1019"
+  },
+  "Question_1020": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "You remember that great gathering and conquest—it was the beginning of your civilization.",
+    "langKey": "en",
+    "id": "Question_1020"
+  },
+  "Identity_1001": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Cultist",
+    "langKey": "en",
+    "id": "Identity_1001"
+  },
+  "Identity_1002": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Fisherman",
+    "langKey": "en",
+    "id": "Identity_1002"
+  },
+  "Identity_1003": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Hunter",
+    "langKey": "en",
+    "id": "Identity_1003"
+  },
+  "Identity_1004": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Ghost",
+    "langKey": "en",
+    "id": "Identity_1004"
+  },
+  "Identity_1005": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Terrorist",
+    "langKey": "en",
+    "id": "Identity_1005"
+  },
+  "Identity_1006": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Ocean Baby",
+    "langKey": "en",
+    "id": "Identity_1006"
+  },
+  "Identity_1007": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Goldfish",
+    "langKey": "en",
+    "id": "Identity_1007"
+  },
+  "Identity_1008": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Leech",
+    "langKey": "en",
+    "id": "Identity_1008"
+  },
+  "Identity_1009": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Alien Cat",
+    "langKey": "en",
+    "id": "Identity_1009"
+  },
+  "Identity_1010": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Dung Beetle",
+    "langKey": "en",
+    "id": "Identity_1010"
+  },
+  "Identity_1011": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Pica",
+    "langKey": "en",
+    "id": "Identity_1011"
+  },
+  "Identity_1012": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Collector",
+    "langKey": "en",
+    "id": "Identity_1012"
+  },
+  "Identity_1013": {
+    "$type": "LanguagesConfig, Assembly-CSharp",
+    "text": "Someone Else’s Dream",
+    "langKey": "en",
+    "id": "Identity_1013"
+  }
+}
