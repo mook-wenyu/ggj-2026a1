@@ -1,4 +1,4 @@
-﻿public class LanguagesConfig : BaseConfig
+public class LanguagesConfig : BaseConfig
 {
     /// <summary>
     /// 本地化文本键值

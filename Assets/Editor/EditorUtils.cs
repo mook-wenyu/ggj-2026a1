@@ -214,7 +214,8 @@ namespace SimpleToolkits.Editor
                 sb.AppendLine($"    public {property.Type} {property.Name};");
             }
             sb.AppendLine("}");
-            File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
+            // 约定：生成文件使用 UTF-8 无 BOM（避免产生不可见差异）。
+            File.WriteAllText(filePath, sb.ToString(), new UTF8Encoding(false));
         }
 
         /// <summary>
@@ -348,7 +349,8 @@ namespace SimpleToolkits.Editor
             }
 
             string json = JsonConvert.SerializeObject(rawDataDict, _jsonSerializerSettings);
-            File.WriteAllText(filePath, json, Encoding.UTF8);
+            // 约定：生成文件使用 UTF-8 无 BOM（避免产生不可见差异）。
+            File.WriteAllText(filePath, json, new UTF8Encoding(false));
 
             Debug.Log($"JSON文件已生成: {filePath}，包含 {rawDataDict.Count} 条数据");
             return true;

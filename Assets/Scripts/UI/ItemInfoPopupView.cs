@@ -20,6 +20,9 @@ public sealed class ItemInfoPopupView : MonoBehaviour
     [SerializeField] private TMP_Text _description;
     [SerializeField] private RectTransform _descriptionRect;
     [SerializeField] private Image _icon;
+    [SerializeField] private Image _panelBackground;
+
+    private Sprite _defaultPanelBackground;
 
     private Action _onReplay;
 
@@ -27,6 +30,8 @@ public sealed class ItemInfoPopupView : MonoBehaviour
     {
         AutoBindIfNeeded();
         BindButtons();
+
+        _defaultPanelBackground = _panelBackground != null ? _panelBackground.sprite : null;
 
         // 统一约定：弹窗预制体在首次实例化后默认隐藏。
         Hide();
@@ -77,6 +82,11 @@ public sealed class ItemInfoPopupView : MonoBehaviour
                 ? _description.rectTransform
                 : transform.Find("Panel/Description")?.GetComponent<RectTransform>();
         }
+
+        if (_panelBackground == null)
+        {
+            _panelBackground = transform.Find("Panel")?.GetComponent<Image>();
+        }
     }
 
     private void BindButtons()
@@ -123,6 +133,13 @@ public sealed class ItemInfoPopupView : MonoBehaviour
         {
             _icon.sprite = item.Icon;
             _icon.enabled = item.Icon != null;
+        }
+
+        if (_panelBackground != null)
+        {
+            _panelBackground.sprite = item.DetailBackground != null
+                ? item.DetailBackground
+                : _defaultPanelBackground;
         }
 
         _onReplay = onReplayClicked;

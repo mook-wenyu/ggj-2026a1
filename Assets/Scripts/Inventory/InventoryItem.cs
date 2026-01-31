@@ -11,14 +11,22 @@ public sealed class InventoryItem
     public string Description { get; }
     public Sprite Icon { get; }
     public string AudioPath { get; }
+    public Sprite DetailBackground { get; }
 
-    public InventoryItem(string id, string displayName, string description, Sprite icon = null, string audioPath = null)
+    public InventoryItem(
+        string id,
+        string displayName,
+        string description,
+        Sprite icon = null,
+        string audioPath = null,
+        Sprite detailBackground = null)
     {
         Id = id;
         DisplayName = displayName;
         Description = description;
         Icon = icon;
         AudioPath = audioPath;
+        DetailBackground = detailBackground;
     }
 
     public string GetDisplayNameOrId()
