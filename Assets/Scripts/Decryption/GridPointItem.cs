@@ -1,3 +1,5 @@
+using System;
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -10,8 +12,8 @@ using UnityEngine.EventSystems;
 public class GridPointItem : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler
 {
     [HideInInspector] public int index;
-    public System.Action<int> onPointerDown;
-    public System.Action<int> onPointerEnter;
+    public Action<int> onPointerDown;
+    public Action<int> onPointerEnter;
 
     public void OnPointerDown(PointerEventData eventData)
     {

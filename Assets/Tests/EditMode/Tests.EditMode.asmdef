@@ -3,6 +3,7 @@
     "rootNamespace": "",
     "references": [
         "Audio.Core",
+        "Decryption.Runtime",
         "Level.Runtime",
         "Puzzles.Runtime"
     ],
