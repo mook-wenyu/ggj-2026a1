@@ -21,8 +21,10 @@ public class GridPatternLock : MonoBehaviour
     public TMP_Text hintText;
 
     [Header("显示")]
-    public Color lineColor = Color.white;
-    public float lineWidth = 4f;
+    public Color lineColor = Color.black;
+    public float lineWidth = 10f;
+    [Tooltip("被连线经过的九宫格点颜色")]
+    public Color linkedPointColor = new Color(0.5f, 0.5f, 0.5f, 1f);
     [Tooltip("答案错误时的字体大小")]
     public float errorFontSize = 48f;
 
@@ -39,6 +41,7 @@ public class GridPatternLock : MonoBehaviour
     private Image _currentLineImage; // 跟随鼠标的线
     private bool _isDragging;
     private GridPointItem[] _points;
+    private Color[] _originalPointColors;
     private RectTransform _containerRect;
     private static Texture2D _whiteTex;
 
@@ -172,6 +175,7 @@ public class GridPatternLock : MonoBehaviour
     private void SetupPoints()
     {
         var points = new List<GridPointItem>();
+        var colors = new List<Color>();
         for (int i = 0; i < gridPointsContainer.childCount; i++)
         {
             var child = gridPointsContainer.GetChild(i);
@@ -181,8 +185,11 @@ public class GridPatternLock : MonoBehaviour
             item.onPointerDown = OnPointDown;
             item.onPointerEnter = OnPointEnter;
             points.Add(item);
+            var graphic = child.GetComponent<Graphic>();
+            colors.Add(graphic != null ? graphic.color : Color.white);
         }
         _points = points.ToArray();
+        _originalPointColors = colors.ToArray();
         if (_points.Length != 9)
             Debug.LogWarning($"GridPatternLock: 期望 9 个点，当前有 {_points.Length} 个");
     }
@@ -267,6 +274,18 @@ public class GridPatternLock : MonoBehaviour
             var to = GetPointLocalPosition(_pattern[i + 1]);
             SetLineBetween(_lineImages[i], from, to);
         }
+        UpdatePointColors();
+    }
+
+    private void UpdatePointColors()
+    {
+        if (_points == null || _originalPointColors == null) return;
+        for (int i = 0; i < _points.Length && i < _originalPointColors.Length; i++)
+        {
+            var graphic = _points[i].GetComponent<Graphic>();
+            if (graphic != null)
+                graphic.color = _pattern.Contains(i) ? linkedPointColor : _originalPointColors[i];
+        }
     }
 
     private Image CreateLineImage(string name)
@@ -317,5 +336,6 @@ public class GridPatternLock : MonoBehaviour
         foreach (var img in _lineImages)
             img.gameObject.SetActive(false);
         _currentLineImage.gameObject.SetActive(false);
+        UpdatePointColors();
     }
 }

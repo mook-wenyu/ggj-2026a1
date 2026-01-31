@@ -124,10 +124,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridPointsContainer: {fileID: 7731425059177195351}
   lineContainer: {fileID: 0}
-  lineColor: {r: 1, g: 1, b: 1, a: 1}
-  lineWidth: 4
+  hintText: {fileID: 0}
+  lineColor: {r: 0, g: 0, b: 0, a: 1}
+  lineWidth: 10
+  linkedPointColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  errorFontSize: 48
   confirmButton: {fileID: 454659596782252942}
   resetButton: {fileID: 2950886513481063823}
+  closeButton: {fileID: 0}
 --- !u!1 &694478131611380220
 GameObject:
   m_ObjectHideFlags: 0
