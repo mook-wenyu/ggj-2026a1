@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2785190008293859432}
   - component: {fileID: 5178693560818355793}
   - component: {fileID: 2073273147336236257}
+  - component: {fileID: 3144828584182757765}
   m_Layer: 0
   m_Name: WorldMgr
   m_TagString: Untagged
@@ -49,6 +50,7 @@ MonoBehaviour:
   _toggleKey: 32
   _startHasMask: 0
   _startWithMask: 0
+  _animationDriver: {fileID: 0}
 --- !u!114 &2073273147336236257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,9 +63,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8280f1ad32f04a542b6a684f7165654a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _levelPrefabs: []
+  _levelPrefabs:
+  - {fileID: 5195976509010823212, guid: e5e863ae8dd2c924b84e63e168b06b0f, type: 3}
+  - {fileID: 6433389054936019209, guid: ba08ab664588c17499f578f2b9daaf7c, type: 3}
   _levelPrefabResourcePaths:
   - Prefabs/Levels/Leve_1
-  _levelParent: {fileID: 0}
+  - Prefabs/Levels/Leve_2
+  _levelParent: {fileID: 2785190008293859432}
   _startLevelIndex: 0
   _resetPuzzleProgressOnLoad: 1
+--- !u!114 &3144828584182757765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3775405611824299767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ac685fecba1d834bbd34d033a0f9c46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maskAnimator: {fileID: 0}
+  _maskRoot: {fileID: 0}
+  _maskSprite: {fileID: 0}
+  _wearClip: {fileID: 0}
+  _holdAfterWearSeconds: 0.05
+  _fadeOutSeconds: 0.15
+  _useUnscaledTime: 1

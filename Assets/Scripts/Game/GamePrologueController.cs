@@ -20,6 +20,9 @@ public sealed class GamePrologueController : MonoBehaviour
     [SerializeField] private Canvas _rootCanvas;
     [SerializeField] private ItemInfoPopupView _popupPrefab;
 
+    [Tooltip("开场纯黑背景（可选）。用于在文案与 gift 动画阶段都保持纯黑背景，同时不遮挡 gift（SpriteRenderer）。")]
+    [SerializeField] private GameObject _prologueBackdrop;
+
     [Tooltip("礼物动画的 Animator。不填则按名称 gift 自动查找。")]
     [SerializeField] private Animator _giftAnimator;
 
@@ -65,12 +68,15 @@ public sealed class GamePrologueController : MonoBehaviour
     private GiftAnimationPlayer _giftPlayer;
     private Coroutine _giftRoutine;
 
+    private static Sprite s_solidSprite;
+
     private void Awake()
     {
         _completedKey = BuildCompletedKey();
         _stateModel = new GamePrologueStateModel();
         EnsureGiftPlayer();
         _giftPlayer?.HideImmediate();
+        SetPrologueBackdropActive(false);
     }
 
     private void Start()
@@ -86,14 +92,19 @@ public sealed class GamePrologueController : MonoBehaviour
 
     private IEnumerator BootstrapRoutine()
     {
-        // 等一帧：确保 Canvas/单例 UI 初始化完成。
-        yield return null;
-
         EnsureReferences();
+
+        // 若关键引用尚未就绪，则等一帧再兜底（避免场景初始化时序导致的空引用）。
+        if (_rootCanvas == null || _maskController == null)
+        {
+            yield return null;
+            EnsureReferences();
+        }
 
         if (_maskController == null)
         {
             Debug.LogError("GamePrologueController: 场景中找不到 MaskWorldController，无法授予面具。", this);
+            SetPrologueBackdropActive(false);
             yield break;
         }
 
@@ -101,6 +112,7 @@ public sealed class GamePrologueController : MonoBehaviour
         {
             MarkCompletedIfNeeded();
             _giftPlayer?.HideImmediate();
+            SetPrologueBackdropActive(false);
             yield break;
         }
 
@@ -112,17 +124,23 @@ public sealed class GamePrologueController : MonoBehaviour
             }
 
             _giftPlayer?.HideImmediate();
+            SetPrologueBackdropActive(false);
             yield break;
         }
+
+        // 开场正式开始：打开纯黑背景。
+        SetPrologueBackdropActive(true);
 
         EnsurePopup();
         if (_popupInstance == null)
         {
+            SetPrologueBackdropActive(false);
             yield break;
         }
 
         if (!_stateModel.TryBegin())
         {
+            SetPrologueBackdropActive(false);
             yield break;
         }
 
@@ -197,6 +215,8 @@ public sealed class GamePrologueController : MonoBehaviour
         MarkCompletedIfNeeded();
         _giftPlayer?.HideImmediate();
 
+        SetPrologueBackdropActive(false);
+
         _popupInstance.Hide();
 
         if (_popupInstance != null)
@@ -217,6 +237,61 @@ public sealed class GamePrologueController : MonoBehaviour
         {
             _rootCanvas = Object.FindObjectOfType<Canvas>();
         }
+    }
+
+    private void SetPrologueBackdropActive(bool active)
+    {
+        if (active && _prologueBackdrop == null)
+        {
+            _prologueBackdrop = CreateRuntimeBackdrop();
+        }
+
+        if (_prologueBackdrop != null)
+        {
+            _prologueBackdrop.SetActive(active);
+        }
+    }
+
+    private GameObject CreateRuntimeBackdrop()
+    {
+        // 兜底：若场景未显式配置开场黑底，则运行时创建一个。
+        // 这样既能满足“开场纯黑背景”的需求，也不阻塞关卡实例化。
+        var go = new GameObject("PrologueBackdrop");
+        go.transform.SetParent(transform, worldPositionStays: false);
+        go.transform.localPosition = Vector3.zero;
+        go.transform.localRotation = Quaternion.identity;
+        go.transform.localScale = new Vector3(100f, 100f, 1f);
+
+        var sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = GetSolidSprite();
+        sr.color = Color.black;
+        sr.sortingLayerName = "UI";
+        sr.sortingOrder = 49;
+
+        go.SetActive(false);
+        return go;
+    }
+
+    private static Sprite GetSolidSprite()
+    {
+        if (s_solidSprite != null)
+        {
+            return s_solidSprite;
+        }
+
+        var tex = new Texture2D(1, 1, TextureFormat.RGBA32, mipChain: false);
+        tex.SetPixel(0, 0, Color.white);
+        tex.Apply(updateMipmaps: false, makeNoLongerReadable: true);
+        tex.wrapMode = TextureWrapMode.Clamp;
+        tex.filterMode = FilterMode.Point;
+
+        s_solidSprite = Sprite.Create(
+            tex,
+            new Rect(0f, 0f, 1f, 1f),
+            new Vector2(0.5f, 0.5f),
+            pixelsPerUnit: 1f
+        );
+        return s_solidSprite;
     }
 
     private void EnsureGiftPlayer()

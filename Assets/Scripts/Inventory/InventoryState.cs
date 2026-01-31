@@ -26,6 +26,16 @@ public sealed class InventoryState
     /// </summary>
     public IReadOnlyList<InventoryItem> Items => _items;
 
+    /// <summary>
+    /// 清空背包内容。
+    /// 说明：当前背包为“收集向、不消耗”，因此清空通常只发生在“新开一局/重新开始”。
+    /// </summary>
+    public void Clear()
+    {
+        _items.Clear();
+        _itemsById.Clear();
+    }
+
     public bool Contains(string id)
     {
         if (string.IsNullOrEmpty(id))
