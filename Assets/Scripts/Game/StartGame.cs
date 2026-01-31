@@ -1,3 +1,4 @@
+using PrimeTween;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,9 +9,9 @@ public class StartGame : MonoBehaviour
 
     void Awake()
     {
-        //PrimeTweenConfig.warnZeroDuration = false;
-        //PrimeTweenConfig.warnEndValueEqualsCurrent = false;
-        //PrimeTweenConfig.defaultEase = Ease.Linear;
+        PrimeTweenConfig.warnZeroDuration = false;
+        PrimeTweenConfig.warnEndValueEqualsCurrent = false;
+        PrimeTweenConfig.defaultEase = Ease.Linear;
 
 
     }
