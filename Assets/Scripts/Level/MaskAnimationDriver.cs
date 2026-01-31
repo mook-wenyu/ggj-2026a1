@@ -3,11 +3,9 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// 面具动画驱动器：监听 MaskWorldController 的状态变化，播放“戴面具/摘面具”动画。
-/// 设计目标：
-/// - 玩法状态（MaskWorldController）与表现（Animator/SpriteRenderer）解耦；
-/// - 允许在 Inspector 显式绑定引用；未绑定时提供可控兜底查找；
-/// - 只在状态发生变化时播放动画（避免 AcquireMask() 触发的重复 false 导致误播放）。
+/// 面具切换表现（动画 + 渐隐）的驱动器。
+///
+/// 重要：该脚本只负责“表现”，不负责改变玩法状态（切换世界由 MaskWorldController 负责）。
 /// </summary>
 public sealed class MaskAnimationDriver : MonoBehaviour
 {
@@ -16,80 +14,177 @@ public sealed class MaskAnimationDriver : MonoBehaviour
     private const string WearStateName = "wear_mask";
     private const string RemoveStateName = "removal_mask";
     private const float DefaultClipDurationSeconds = 0.75f;
+    private const float HoldLastFrameNormalizedTime = 0.999f;
 
     [Header("引用（推荐显式绑定）")]
-    [SerializeField] private MaskWorldController _controller;
     [SerializeField] private Animator _maskAnimator;
     [SerializeField] private GameObject _maskRoot;
+    [SerializeField] private SpriteRenderer _maskSprite;
     [SerializeField] private AnimationClip _wearClip;
 
-    [Header("行为")]
-    [Tooltip("摘面具动画播完后，是否自动隐藏 mask 根物体。")]
-    [SerializeField] private bool _hideWhenMaskOff = true;
+    [Header("时序")]
+    [Tooltip("戴上面具动画结束后，额外停留时间（让玩家看清‘定格戴上’）。")]
+    [SerializeField] private float _holdAfterWearSeconds = 0.05f;
+    [Tooltip("切世界后，面具的快速渐隐时长。")]
+    [SerializeField] private float _fadeOutSeconds = 0.15f;
+    [Tooltip("是否使用不受 Time.timeScale 影响的时间（用于等待/渐隐）。")]
+    [SerializeField] private bool _useUnscaledTime = false;
 
-    private bool _subscribed;
-    private bool _hasKnownState;
-    private bool _isMaskOn;
-    private Coroutine _hideRoutine;
+    private bool _loggedMissingAnimator;
 
     private void Awake()
     {
-        if (_controller == null)
-        {
-            _controller = GetComponent<MaskWorldController>();
-            if (_controller == null)
-            {
-                _controller = Object.FindObjectOfType<MaskWorldController>();
-            }
-        }
-
-        EnsureAnimatorBound();
-        CacheWearClip();
-
-        // 初始：只同步显示状态，不播放动画。
-        _isMaskOn = _controller != null && _controller.IsMaskOn;
-        _hasKnownState = true;
-        ApplyStaticVisibility(_isMaskOn);
-
-        Subscribe();
+        EnsureReferencesBound();
+        HideImmediate();
     }
 
-    private void OnDestroy()
+    public void ShowWornPose()
     {
-        Unsubscribe();
-    }
-
-    private void Subscribe()
-    {
-        if (_subscribed)
+        EnsureReferencesBound();
+        if (_maskAnimator == null || _maskRoot == null)
         {
             return;
         }
 
-        if (_controller != null)
-        {
-            _controller.MaskStateChanged += HandleMaskStateChanged;
-        }
+        _maskRoot.SetActive(true);
+        SetAlpha(1f);
 
-        _subscribed = true;
+        // 让 AnimatorController 处于“戴上”条件，避免 AnyState 逻辑把状态拉回摘面具。
+        _maskAnimator.SetBool(MaskBoolParamName, true);
+
+        // 直接定位到最后一帧，作为“已戴上”的定格画面。
+        _maskAnimator.speed = 1f;
+        // 注意：normalizedTime 的整数部分代表“循环次数”。用 1f 可能会落到下一次循环的 0% 导致显示第一帧。
+        _maskAnimator.Play(WearStateName, 0, HoldLastFrameNormalizedTime);
+        _maskAnimator.Update(0f);
     }
 
-    private void Unsubscribe()
+    public IEnumerator PlayWearAndHold()
     {
-        if (!_subscribed)
+        EnsureReferencesBound();
+        if (_maskAnimator == null || _maskRoot == null)
+        {
+            yield break;
+        }
+
+        _maskRoot.SetActive(true);
+        SetAlpha(1f);
+
+        _maskAnimator.speed = 1f;
+        _maskAnimator.SetBool(MaskBoolParamName, true);
+        _maskAnimator.Play(WearStateName, 0, 0f);
+        _maskAnimator.Update(0f);
+
+        yield return WaitSeconds(GetClipDurationSeconds());
+
+        // 定格到最后一帧（避免小数误差导致不是最终帧）。
+        _maskAnimator.Play(WearStateName, 0, HoldLastFrameNormalizedTime);
+        _maskAnimator.Update(0f);
+
+        if (_holdAfterWearSeconds > 0f)
+        {
+            yield return WaitSeconds(_holdAfterWearSeconds);
+        }
+    }
+
+    public IEnumerator FadeOutAndHide()
+    {
+        EnsureReferencesBound();
+        if (_maskRoot == null)
+        {
+            yield break;
+        }
+
+        // 没有 SpriteRenderer 也能正常隐藏，只是没有渐隐。
+        if (_maskSprite == null)
+        {
+            _maskRoot.SetActive(false);
+            yield break;
+        }
+
+        var duration = Mathf.Max(0f, _fadeOutSeconds);
+        if (duration <= 0f)
+        {
+            SetAlpha(0f);
+            _maskRoot.SetActive(false);
+            yield break;
+        }
+
+        var elapsed = 0f;
+        while (elapsed < duration)
+        {
+            var t = Mathf.Clamp01(elapsed / duration);
+            SetAlpha(Mathf.Lerp(1f, 0f, t));
+            elapsed += GetDeltaTime();
+            yield return null;
+        }
+
+        SetAlpha(0f);
+        _maskRoot.SetActive(false);
+    }
+
+    public IEnumerator PlayRemovalAndHide()
+    {
+        EnsureReferencesBound();
+        if (_maskAnimator == null || _maskRoot == null)
+        {
+            yield break;
+        }
+
+        _maskRoot.SetActive(true);
+        SetAlpha(1f);
+
+        // 说明：我们不依赖“负 speed 直接倒放”（在部分情况下会出现冻结/采样异常）。
+        // 这里通过“逐帧采样 normalizedTime 从 1 -> 0”来稳定实现倒放。
+        var duration = GetClipDurationSeconds();
+        if (duration <= 0f)
+        {
+            _maskRoot.SetActive(false);
+            yield break;
+        }
+
+        // 暂停 Animator 自驱动时间推进，由我们手动采样。
+        _maskAnimator.speed = 0f;
+
+        // 保持在 wear 状态即可（clip 相同），避免依赖 removal 状态的负 speed。
+        _maskAnimator.SetBool(MaskBoolParamName, true);
+
+        var elapsed = 0f;
+        while (elapsed < duration)
+        {
+            var t = Mathf.Clamp01(elapsed / duration);
+            var normalized = Mathf.Lerp(HoldLastFrameNormalizedTime, 0f, t);
+            _maskAnimator.Play(WearStateName, 0, normalized);
+            _maskAnimator.Update(0f);
+
+            elapsed += GetDeltaTime();
+            yield return null;
+        }
+
+        // 结束：确保落在第一帧（未戴上）。
+        _maskAnimator.Play(WearStateName, 0, 0f);
+        _maskAnimator.Update(0f);
+
+        _maskRoot.SetActive(false);
+
+        // 还原 Animator，避免影响下一次戴面具。
+        _maskAnimator.speed = 1f;
+        _maskAnimator.SetBool(MaskBoolParamName, false);
+    }
+
+    public void HideImmediate()
+    {
+        EnsureReferencesBound();
+        if (_maskRoot == null)
         {
             return;
         }
 
-        if (_controller != null)
-        {
-            _controller.MaskStateChanged -= HandleMaskStateChanged;
-        }
-
-        _subscribed = false;
+        SetAlpha(1f);
+        _maskRoot.SetActive(false);
     }
 
-    private void EnsureAnimatorBound()
+    private void EnsureReferencesBound()
     {
         if (_maskAnimator != null)
         {
@@ -97,10 +192,17 @@ public sealed class MaskAnimationDriver : MonoBehaviour
             {
                 _maskRoot = _maskAnimator.gameObject;
             }
+
+            if (_maskSprite == null && _maskRoot != null)
+            {
+                _maskSprite = _maskRoot.GetComponent<SpriteRenderer>();
+            }
+
+            CacheWearClip();
             return;
         }
 
-        // 兜底：从场景中查找（包含 inactive）。
+        // 兜底：从场景中按名称查找（包含 inactive）。
         var animators = Object.FindObjectsByType<Animator>(
             FindObjectsInactive.Include,
             FindObjectsSortMode.None);
@@ -111,15 +213,18 @@ public sealed class MaskAnimationDriver : MonoBehaviour
             {
                 _maskAnimator = a;
                 _maskRoot = a.gameObject;
-                break;
+                _maskSprite = _maskRoot != null ? _maskRoot.GetComponent<SpriteRenderer>() : null;
+                CacheWearClip();
+                return;
             }
         }
 
-        if (_maskAnimator == null)
+        if (!_loggedMissingAnimator)
         {
             Debug.LogError(
-                $"MaskAnimationDriver: 场景中找不到名为 {DefaultMaskObjectName} 的 Animator（用于面具动画）。请在 Inspector 绑定 _maskAnimator。",
+                $"MaskAnimationDriver: 场景中找不到名为 {DefaultMaskObjectName} 的 Animator（用于面具过场表现）。请在 Inspector 绑定 _maskAnimator。",
                 this);
+            _loggedMissingAnimator = true;
         }
     }
 
@@ -146,87 +251,41 @@ public sealed class MaskAnimationDriver : MonoBehaviour
         }
     }
 
-    private void HandleMaskStateChanged(bool isMaskOn)
-    {
-        // 关键：只在“状态发生变化”时播放动画，避免 AcquireMask() 触发的重复 false 误播放摘面具动画。
-        if (_hasKnownState && isMaskOn == _isMaskOn)
-        {
-            return;
-        }
-
-        _isMaskOn = isMaskOn;
-        _hasKnownState = true;
-
-        if (_maskAnimator == null || _maskRoot == null)
-        {
-            return;
-        }
-
-        StopHideRoutineIfNeeded();
-        _maskRoot.SetActive(true);
-
-        // 只改参数，让 AnimatorController 负责状态切换。
-        _maskAnimator.SetBool(MaskBoolParamName, isMaskOn);
-
-        if (!isMaskOn && _hideWhenMaskOff)
-        {
-            _hideRoutine = StartCoroutine(HideAfterSeconds(GetClipDurationSeconds()));
-        }
-    }
-
-    private void ApplyStaticVisibility(bool isMaskOn)
-    {
-        if (_maskRoot == null)
-        {
-            return;
-        }
-
-        // 未戴面具：隐藏整个对象，避免屏幕上出现第一帧。
-        if (!isMaskOn)
-        {
-            _maskRoot.SetActive(false);
-            return;
-        }
-
-        _maskRoot.SetActive(true);
-        if (_maskAnimator != null)
-        {
-            // 初始为“已戴上”时：直接定位到最后一帧，避免开局播一次动画。
-            _maskAnimator.SetBool(MaskBoolParamName, true);
-            _maskAnimator.Play(WearStateName, 0, 1f);
-            _maskAnimator.Update(0f);
-        }
-    }
-
     private float GetClipDurationSeconds()
     {
         return _wearClip != null ? _wearClip.length : DefaultClipDurationSeconds;
     }
 
-    private IEnumerator HideAfterSeconds(float seconds)
+    private IEnumerator WaitSeconds(float seconds)
     {
-        if (seconds > 0f)
+        var duration = Mathf.Max(0f, seconds);
+        if (duration <= 0f)
         {
-            yield return new WaitForSeconds(seconds);
+            yield break;
         }
 
-        // 若期间又戴上了面具，则不隐藏。
-        if (!_isMaskOn && _maskRoot != null)
+        var elapsed = 0f;
+        while (elapsed < duration)
         {
-            _maskRoot.SetActive(false);
+            elapsed += GetDeltaTime();
+            yield return null;
         }
-
-        _hideRoutine = null;
     }
 
-    private void StopHideRoutineIfNeeded()
+    private float GetDeltaTime()
     {
-        if (_hideRoutine == null)
+        return _useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+    }
+
+    private void SetAlpha(float alpha)
+    {
+        if (_maskSprite == null)
         {
             return;
         }
 
-        StopCoroutine(_hideRoutine);
-        _hideRoutine = null;
+        var c = _maskSprite.color;
+        c.a = Mathf.Clamp01(alpha);
+        _maskSprite.color = c;
     }
 }

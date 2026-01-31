@@ -9,11 +9,16 @@ public sealed class MaskToggleButtonView : MonoBehaviour
     [SerializeField] private Button _button;
     [SerializeField] private Image _icon;
 
+    [Header("裂痕（可选）")]
+    [Tooltip("裂痕阶段图标：0=无裂痕；1=通关 1 关后；以此类推并自动封顶。\n若为空或未配置，将保持当前图标不变。")]
+    [SerializeField] private Sprite[] _crackStageSprites;
+
     [Header("颜色")]
     [SerializeField] private Color _normalColor = Color.white;
     [SerializeField] private Color _maskOnColor = new(0.85f, 0.95f, 1f, 1f);
 
     private MaskWorldController _controller;
+    private LevelFlowController _levelFlow;
     private bool _subscribed;
 
     public void Bind(MaskWorldController controller)
@@ -61,6 +66,17 @@ public sealed class MaskToggleButtonView : MonoBehaviour
         {
             _controller.MaskAcquired += HandleMaskAcquired;
             _controller.MaskStateChanged += HandleMaskStateChanged;
+            _controller.MaskTransitioningChanged += HandleMaskTransitioningChanged;
+        }
+
+        if (_levelFlow == null)
+        {
+            _levelFlow = Object.FindObjectOfType<LevelFlowController>();
+        }
+
+        if (_levelFlow != null)
+        {
+            _levelFlow.LevelCompleted += HandleLevelCompleted;
         }
 
         _subscribed = true;
@@ -82,6 +98,12 @@ public sealed class MaskToggleButtonView : MonoBehaviour
         {
             _controller.MaskAcquired -= HandleMaskAcquired;
             _controller.MaskStateChanged -= HandleMaskStateChanged;
+            _controller.MaskTransitioningChanged -= HandleMaskTransitioningChanged;
+        }
+
+        if (_levelFlow != null)
+        {
+            _levelFlow.LevelCompleted -= HandleLevelCompleted;
         }
 
         _subscribed = false;
@@ -99,6 +121,7 @@ public sealed class MaskToggleButtonView : MonoBehaviour
         }
 
         _controller?.ToggleMask();
+        Refresh();
     }
 
     private void HandleMaskAcquired()
@@ -111,17 +134,52 @@ public sealed class MaskToggleButtonView : MonoBehaviour
         Refresh();
     }
 
+    private void HandleMaskTransitioningChanged(bool _)
+    {
+        Refresh();
+    }
+
+    private void HandleLevelCompleted(int _)
+    {
+        Refresh();
+    }
+
     private void Refresh()
     {
         if (_button != null)
         {
-            _button.interactable = _controller != null && _controller.HasMask;
+            _button.interactable = _controller != null && _controller.HasMask && !_controller.IsTransitioning;
         }
 
         if (_icon != null)
         {
+            TryApplyCrackSprite();
+
             var isOn = _controller != null && _controller.IsMaskOn;
             _icon.color = isOn ? _maskOnColor : _normalColor;
         }
+    }
+
+    private void TryApplyCrackSprite()
+    {
+        if (_crackStageSprites == null || _crackStageSprites.Length == 0)
+        {
+            return;
+        }
+
+        var completed = _levelFlow != null ? _levelFlow.CompletedLevelCount : 0;
+        var stageIndex = MaskCrackProgression.GetStageIndex(completed, _crackStageSprites.Length);
+        if (stageIndex < 0 || stageIndex >= _crackStageSprites.Length)
+        {
+            return;
+        }
+
+        var stageSprite = _crackStageSprites[stageIndex];
+        if (stageSprite == null)
+        {
+            return;
+        }
+
+        _icon.sprite = stageSprite;
     }
 }

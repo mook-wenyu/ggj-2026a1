@@ -13,6 +13,8 @@ public sealed class ItemInfoPopupView : MonoBehaviour
 
     [Header("引用（可选，未绑定会按层级名称自动查找）")]
     [SerializeField] private Button _overlayButton;
+    [SerializeField] private Image _overlayImage;
+    [SerializeField] private GameObject _panelRoot;
     [SerializeField] private Button _closeButton;
     [SerializeField] private Button _replayButton;
     [SerializeField] private GameObject _replayRoot;
@@ -25,6 +27,8 @@ public sealed class ItemInfoPopupView : MonoBehaviour
     private Sprite _defaultPanelBackground;
 
     private Action _onReplay;
+    private Action _onClosed;
+    private Action _onCloseRequested;
 
     private void Awake()
     {
@@ -42,6 +46,16 @@ public sealed class ItemInfoPopupView : MonoBehaviour
         if (_overlayButton == null)
         {
             _overlayButton = GetComponent<Button>();
+        }
+
+        if (_overlayImage == null)
+        {
+            _overlayImage = GetComponent<Image>();
+        }
+
+        if (_panelRoot == null)
+        {
+            _panelRoot = transform.Find("Panel")?.gameObject;
         }
 
         if (_closeButton == null)
@@ -94,13 +108,13 @@ public sealed class ItemInfoPopupView : MonoBehaviour
         if (_overlayButton != null)
         {
             _overlayButton.onClick.RemoveAllListeners();
-            _overlayButton.onClick.AddListener(Hide);
+            _overlayButton.onClick.AddListener(HandleCloseClicked);
         }
 
         if (_closeButton != null)
         {
             _closeButton.onClick.RemoveAllListeners();
-            _closeButton.onClick.AddListener(Hide);
+            _closeButton.onClick.AddListener(HandleCloseClicked);
         }
 
         if (_replayButton != null)
@@ -143,6 +157,8 @@ public sealed class ItemInfoPopupView : MonoBehaviour
         }
 
         _onReplay = onReplayClicked;
+        _onClosed = null;
+        _onCloseRequested = null;
 
         if (_replayRoot != null)
         {
@@ -160,10 +176,123 @@ public sealed class ItemInfoPopupView : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 通用文本弹窗（不依赖 InventoryItem）。
+    /// 主要用于剧情/提示等一次性叙事场景。
+    /// </summary>
+    public void ShowText(string title, string description, Sprite icon = null, Action onClosed = null)
+    {
+        gameObject.SetActive(true);
+
+        if (_title != null)
+        {
+            _title.text = title ?? string.Empty;
+        }
+
+        if (_description != null)
+        {
+            _description.text = description ?? string.Empty;
+        }
+
+        if (_icon != null)
+        {
+            _icon.sprite = icon;
+            _icon.enabled = icon != null;
+        }
+
+        if (_panelBackground != null)
+        {
+            _panelBackground.sprite = _defaultPanelBackground;
+        }
+
+        _onReplay = null;
+        _onClosed = onClosed;
+        _onCloseRequested = null;
+
+        if (_replayRoot != null)
+        {
+            _replayRoot.SetActive(false);
+        }
+
+        if (_replayButton != null)
+        {
+            _replayButton.interactable = false;
+        }
+
+        if (_descriptionRect != null)
+        {
+            _descriptionRect.offsetMin = DescOffsetMinNoReplay;
+        }
+    }
+
     public void Hide()
     {
         _onReplay = null;
+        var onClosed = _onClosed;
+        _onClosed = null;
+        _onCloseRequested = null;
         gameObject.SetActive(false);
+
+        // 回调放在 SetActive(false) 之后：避免外部在回调里立即 Show 造成闪烁/层级竞争。
+        onClosed?.Invoke();
+    }
+
+    /// <summary>
+    /// 拦截“关闭”行为（遮罩点击/关闭按钮）。
+    /// 若设置了该回调，则点击不会自动 Hide()。
+    /// </summary>
+    public void SetCloseRequestedHandler(Action onCloseRequested)
+    {
+        _onCloseRequested = onCloseRequested;
+    }
+
+    public void ClearCloseRequestedHandler()
+    {
+        _onCloseRequested = null;
+    }
+
+    public void SetCloseInteractable(bool interactable)
+    {
+        if (_overlayButton != null)
+        {
+            _overlayButton.interactable = interactable;
+        }
+
+        if (_closeButton != null)
+        {
+            _closeButton.interactable = interactable;
+        }
+    }
+
+    public void SetPanelVisible(bool visible)
+    {
+        if (_panelRoot != null)
+        {
+            _panelRoot.SetActive(visible);
+        }
+    }
+
+    public void SetOverlayAlpha(float alpha)
+    {
+        if (_overlayImage == null)
+        {
+            return;
+        }
+
+        var c = _overlayImage.color;
+        c.a = Mathf.Clamp01(alpha);
+        _overlayImage.color = c;
+    }
+
+    private void HandleCloseClicked()
+    {
+        if (_onCloseRequested != null)
+        {
+            _onCloseRequested.Invoke();
+            return;
+        }
+
+        Hide();
     }
 
     private void HandleReplayClicked()

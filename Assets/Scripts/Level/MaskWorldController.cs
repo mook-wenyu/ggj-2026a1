@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 /// <summary>
 /// 面具控制器：维护当前“是否戴面具”的状态，并把状态应用到当前关卡（DualWorldLevel）。
@@ -16,12 +18,21 @@ public sealed class MaskWorldController : MonoBehaviour
     [SerializeField] private bool _startHasMask;
     [SerializeField] private bool _startWithMask;
 
+    [Header("表现（可选）")]
+    [Tooltip("不填则自动查找。用于播放戴/摘面具动画与渐隐。")]
+    [SerializeField] private MaskAnimationDriver _animationDriver;
+
     private MaskStateModel _model;
     private DualWorldLevel _currentLevel;
     private LevelPrefabSwitcher _prefabSwitcher;
 
+    private Coroutine _toggleRoutine;
+
+    public bool IsTransitioning { get; private set; }
+
     public event Action MaskAcquired;
     public event Action<bool> MaskStateChanged;
+    public event Action<bool> MaskTransitioningChanged;
 
     public bool HasMask => _model != null && _model.HasMask;
     public bool IsMaskOn => _model != null && _model.IsMaskOn;
@@ -37,6 +48,15 @@ public sealed class MaskWorldController : MonoBehaviour
         if (_prefabSwitcher != null)
         {
             _prefabSwitcher.LevelLoaded += HandleLevelLoaded;
+        }
+
+        if (_animationDriver == null)
+        {
+            _animationDriver = GetComponent<MaskAnimationDriver>();
+            if (_animationDriver == null)
+            {
+                _animationDriver = Object.FindObjectOfType<MaskAnimationDriver>();
+            }
         }
 
         // 若场景一开始已经存在关卡实例，也尝试绑定一次。
@@ -89,13 +109,67 @@ public sealed class MaskWorldController : MonoBehaviour
             return;
         }
 
-        if (!_model.TryToggleMask())
+        if (!_model.HasMask)
         {
             return;
         }
 
-        ApplyToCurrentLevel();
-        MaskStateChanged?.Invoke(_model.IsMaskOn);
+        // 关键：切换期间不允许重复触发（避免疯狂循环/重复播放）。
+        if (IsTransitioning)
+        {
+            return;
+        }
+
+        var currentIsMaskOn = _model.IsMaskOn;
+        var targetIsMaskOn = !currentIsMaskOn;
+        var steps = MaskToggleSequencePlanner.Build(currentIsMaskOn);
+
+        IsTransitioning = true;
+        MaskTransitioningChanged?.Invoke(true);
+        _toggleRoutine = StartCoroutine(RunToggleSequence(steps, targetIsMaskOn));
+    }
+
+    private IEnumerator RunToggleSequence(MaskToggleSequencePlanner.Step[] steps, bool targetIsMaskOn)
+    {
+        // 若没有表现驱动，则仅做玩法层切换，保证可玩。
+        var driver = _animationDriver;
+
+        foreach (var step in steps)
+        {
+            switch (step)
+            {
+                case MaskToggleSequencePlanner.Step.PlayWearAndHold:
+                    if (driver != null)
+                    {
+                        yield return driver.PlayWearAndHold();
+                    }
+                    break;
+                case MaskToggleSequencePlanner.Step.ShowWornPose:
+                    driver?.ShowWornPose();
+                    break;
+                case MaskToggleSequencePlanner.Step.SwitchWorld:
+                    SetMaskOn(targetIsMaskOn);
+                    break;
+                case MaskToggleSequencePlanner.Step.FadeOutAndHide:
+                    if (driver != null)
+                    {
+                        yield return driver.FadeOutAndHide();
+                    }
+                    break;
+                case MaskToggleSequencePlanner.Step.PlayRemovalAndHide:
+                    if (driver != null)
+                    {
+                        yield return driver.PlayRemovalAndHide();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        _toggleRoutine = null;
+        IsTransitioning = false;
+        MaskTransitioningChanged?.Invoke(false);
     }
 
     public void SetMaskOn(bool isMaskOn)

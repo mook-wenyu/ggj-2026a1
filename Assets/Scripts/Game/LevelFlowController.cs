@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 
 using UnityEngine;
@@ -17,6 +18,19 @@ public sealed class LevelFlowController : MonoBehaviour
     private ILevelSwitcher _levelSwitcher;
     private Coroutine _routine;
     private bool _continueRequested;
+    private int _completedLevelCount;
+
+    /// <summary>
+    /// 已通关的关卡数（从 0 开始计数）。
+    /// 注意：目前为运行时计数，不做跨会话持久化。
+    /// </summary>
+    public int CompletedLevelCount => _completedLevelCount;
+
+    /// <summary>
+    /// 关卡通关事件。
+    /// 参数为 <see cref="CompletedLevelCount"/>（通关后的计数值）。
+    /// </summary>
+    public event Action<int> LevelCompleted;
 
     private void Awake()
     {
@@ -53,6 +67,10 @@ public sealed class LevelFlowController : MonoBehaviour
             _routine = null;
             yield break;
         }
+
+        // 0) 记录通关（用于 UI/反馈等系统，例如：面具裂痕）。
+        _completedLevelCount++;
+        LevelCompleted?.Invoke(_completedLevelCount);
 
         // 1) 先显示“下一关界面”，等待玩家确认；此时黑屏应隐藏且不拦截输入。
         _blackPanel.SetAlphaImmediate(0f);

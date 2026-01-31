@@ -31,9 +31,11 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
     private Vector3 _originalScale;
     private GameObject _clickHint;
     private PickupCondition[] _pickupConditions;
+    private bool _isUiElement;
 
     private void Awake()
     {
+        _isUiElement = GetComponent<RectTransform>() != null;
         _originalScale = transform.localScale;
         _pickupConditions = GetComponents<PickupCondition>();
         ResolveActionIfNeeded();
@@ -100,7 +102,7 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
     private void EnsureEventSystemForUi()
     {
-        if (GetComponent<RectTransform>() == null)
+        if (!_isUiElement)
         {
             return;
         }
@@ -116,8 +118,7 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
     private void EnsureRaycastable()
     {
-        var isUi = GetComponent<RectTransform>() != null;
-        if (!isUi)
+        if (!_isUiElement)
         {
             EnsureCollider();
             return;
@@ -170,7 +171,7 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
             return;
         }
 
-        if (GetComponent<RectTransform>() != null)
+        if (_isUiElement)
         {
             CreateClickHintUi();
         }
@@ -225,11 +226,21 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
     private void OnMouseEnter()
     {
+        if (!_isUiElement && IsPointerOverUi())
+        {
+            return;
+        }
+
         StartCoroutine(HoverEffect(true));
     }
 
     private void OnMouseExit()
     {
+        if (!_isUiElement && IsPointerOverUi())
+        {
+            return;
+        }
+
         StartCoroutine(HoverEffect(false));
     }
 
@@ -252,6 +263,11 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
     private void OnMouseDown()
     {
+        if (!_isUiElement && IsPointerOverUi())
+        {
+            return;
+        }
+
         TryInteract();
     }
 
@@ -263,7 +279,7 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (GetComponent<RectTransform>() != null)
+        if (_isUiElement)
         {
             OnMouseEnter();
         }
@@ -271,10 +287,17 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (GetComponent<RectTransform>() != null)
+        if (_isUiElement)
         {
             OnMouseExit();
         }
+    }
+
+    private static bool IsPointerOverUi()
+    {
+        // 统一入口：避免 UI 叠层时“点击 UI 但触发场景物体”的穿透问题。
+        // 参考：Unity 的 OnMouseDown/OnMouseEnter 不会自动考虑 EventSystem。
+        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 
     private void TryInteract()

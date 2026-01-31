@@ -6,6 +6,8 @@
         "Decryption.Runtime",
         "Interaction.Core.Runtime",
         "Level.Runtime",
+        "Prologue.Runtime",
+        "Presentation.Runtime",
         "Puzzles.Runtime"
     ],
     "includePlatforms": [
