@@ -2,13 +2,11 @@ using System.Collections;
 
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    [Tooltip("物品ID（ItemsConfig.id）。\n必填：点击会收集到物品栏并弹出统一的物品详情弹窗；同时该物体在场景中消失。")]
-    public string itemId;
-
     public float hoverScale = 1.1f;
     public float hoverDuration = 0.05f;
 
@@ -18,13 +16,82 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
     [Tooltip("小白点缩放，设为 0 关闭提示")]
     public float clickHintSize = 0.15f;
 
+    [Header("交互")]
+    [Tooltip("所有前置条件满足后执行的动作（例如：加入背包/结束关卡）。")]
+    [SerializeField] private InteractionAction _action;
+
+    [Tooltip("动作为 true 时是否隐藏该物体。多数道具应勾选；若只是触发机关可关闭。")]
+    [SerializeField] private bool _disableOnSuccess = true;
+
+    [Header("兼容（推荐改用 InteractionAction）")]
+    [Tooltip("旧版字段：不配置交互动作时，会用该 ID 走“加入背包 + 弹出详情”。")]
+    [FormerlySerializedAs("itemId")]
+    [SerializeField] private string _legacyItemId;
+
     private Vector3 _originalScale;
     private GameObject _clickHint;
+    private PickupCondition[] _pickupConditions;
+
+    private void Awake()
+    {
+        _originalScale = transform.localScale;
+        _pickupConditions = GetComponents<PickupCondition>();
+        ResolveActionIfNeeded();
+    }
+
+    private void ResolveActionIfNeeded()
+    {
+        if (_action != null)
+        {
+            return;
+        }
+
+        var actions = GetComponents<InteractionAction>();
+        if (actions == null || actions.Length == 0)
+        {
+            return;
+        }
+
+        if (actions.Length == 1)
+        {
+            _action = actions[0];
+            return;
+        }
+
+        // 当同一物体上存在多个动作时，优先选择“入口动作”。
+        InteractionAction entry = null;
+        foreach (var a in actions)
+        {
+            if (a is not IInteractionEntryAction)
+            {
+                continue;
+            }
+
+            if (entry != null)
+            {
+                Debug.LogError(
+                    $"InteractiveItem: {gameObject.name} 上存在多个入口动作（IInteractionEntryAction），请在 Inspector 显式绑定交互动作（_action）。",
+                    this);
+                return;
+            }
+
+            entry = a;
+        }
+
+        if (entry != null)
+        {
+            _action = entry;
+            return;
+        }
+
+        Debug.LogError(
+            $"InteractiveItem: {gameObject.name} 上存在多个交互动作，请在 Inspector 显式绑定交互动作（_action），" +
+            "或为其中一个动作实现 IInteractionEntryAction 以消除歧义。",
+            this);
+    }
 
     private void Start()
     {
-        _originalScale = transform.localScale;
-
         EnsureEventSystemForUi();
         EnsureRaycastable();
         EnsurePointPrefab();
@@ -185,13 +252,13 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
     private void OnMouseDown()
     {
-        TryCollectAndOpen();
+        TryInteract();
     }
 
     // 支持 UI Image 的点击（需场景中有 EventSystem）
     public void OnPointerClick(PointerEventData eventData)
     {
-        TryCollectAndOpen();
+        TryInteract();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -210,28 +277,100 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
         }
     }
 
-    private void TryCollectAndOpen()
+    private void TryInteract()
     {
-        if (string.IsNullOrWhiteSpace(itemId))
+        if (!TryCheckConditions(out var blockedReason, out var blocker))
         {
-            Debug.LogError($"InteractiveItem: {gameObject.name} 未配置 itemId，无法打开物品详情弹窗。", this);
+            if (blocker != null)
+            {
+                blocker.OnPickupBlocked(blockedReason);
+            }
+
+            Debug.Log($"InteractiveItem: {gameObject.name} 暂不可交互：{blockedReason}", this);
             return;
         }
 
-        var id = itemId.Trim();
+        if (_action == null)
+        {
+            // 兼容：允许旧 prefab/scene 沿用 itemId。
+            if (TryExecuteLegacyInventoryPickup())
+            {
+                if (_disableOnSuccess)
+                {
+                    gameObject.SetActive(false);
+                }
+
+                return;
+            }
+
+            Debug.LogError($"InteractiveItem: {gameObject.name} 未绑定交互动作（InteractionAction）。", this);
+            return;
+        }
+
+        if (!_action.TryExecute(new InteractionContext(gameObject, this)))
+        {
+            return;
+        }
+
+        if (_disableOnSuccess)
+        {
+            gameObject.SetActive(false);
+        }
+    }
+
+    private bool TryExecuteLegacyInventoryPickup()
+    {
+        if (string.IsNullOrWhiteSpace(_legacyItemId))
+        {
+            return false;
+        }
+
+        var id = _legacyItemId.Trim();
         var inventoryPanel = Object.FindObjectOfType<InventoryPanel>();
         if (inventoryPanel == null)
         {
             Debug.LogError($"InteractiveItem: 场景中找不到 InventoryPanel，无法打开物品详情弹窗（id={id}）。", this);
-            return;
+            return false;
         }
 
         if (!inventoryPanel.TryCollectAndOpenFromScene(id))
         {
             Debug.LogError($"InteractiveItem: 打开物品详情失败（id={id}）。", this);
-            return;
+            return false;
         }
 
-        gameObject.SetActive(false);
+        return true;
+    }
+
+    private bool TryCheckConditions(out string blockedReason, out PickupCondition blocker)
+    {
+        blockedReason = null;
+        blocker = null;
+
+        if (_pickupConditions == null || _pickupConditions.Length == 0)
+        {
+            return true;
+        }
+
+        foreach (var condition in _pickupConditions)
+        {
+            if (condition == null)
+            {
+                continue;
+            }
+
+            if (condition.CanPickup(out blockedReason))
+            {
+                continue;
+            }
+
+            blocker = condition;
+            blockedReason = string.IsNullOrWhiteSpace(blockedReason) ? condition.GetType().Name : blockedReason;
+            return false;
+        }
+
+        blockedReason = null;
+        blocker = null;
+        return true;
     }
 }

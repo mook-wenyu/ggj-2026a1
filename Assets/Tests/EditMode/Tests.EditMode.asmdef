@@ -2,7 +2,11 @@
     "name": "Tests.EditMode",
     "rootNamespace": "",
     "references": [
-        "Audio.Core"
+        "Audio.Core",
+        "Decryption.Runtime",
+        "Interaction.Core.Runtime",
+        "Level.Runtime",
+        "Puzzles.Runtime"
     ],
     "includePlatforms": [
         "Editor"

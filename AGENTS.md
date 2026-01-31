@@ -43,7 +43,7 @@ PlayMode：
 ### 2.4 运行单个测试（重点）
 优先使用 `-testFilter`（支持“完整测试名”或“子串匹配”）。示例：
 ```bat
-"%UNITY_EDITOR%" -batchmode -nographics -projectPath . -runTests -testPlatform EditMode -testFilter "Ggj.Tests.RuntimePrefsTests.GetInt_WhenMissing_ReturnsDefault" -testResults TestResults/single.xml -logFile Logs/single-test.log -quit
+"%UNITY_EDITOR%" -batchmode -nographics -projectPath . -runTests -testPlatform EditMode -testFilter "PuzzleProgressTests.IsSolved_WhenMarkedSolved_ReturnsTrue" -testResults TestResults/single.xml -logFile Logs/single-test.log -quit
 ```
 常用变体：
 ```bat
@@ -71,7 +71,7 @@ REM 2) 按分类运行（需要在测试上标注 [Category("...")]）
 - 建议：新增 `Assets/Editor/Build/BuildScript.cs`（静态方法 + 明确参数），再用以下方式构建：
 ```bat
 REM 示例（需要你实现 BuildScript.BuildWindows64）
-"%UNITY_EDITOR%" -batchmode -nographics -projectPath . -executeMethod Ggj.Editor.Build.BuildScript.BuildWindows64 -logFile Logs/build.log -quit
+"%UNITY_EDITOR%" -batchmode -nographics -projectPath . -executeMethod BuildScript.BuildWindows64 -logFile Logs/build.log -quit
 ```
 
 ### 2.7 VSCode 调试（可选）
@@ -84,14 +84,22 @@ REM 示例（需要你实现 BuildScript.BuildWindows64）
 - VSCode 侧默认 solution：`ggj-2026a1.sln`（见 `.vscode/settings.json`）
 
 ## 3. 代码组织与模块化（强制）
-- **新代码必须有命名空间**：统一使用根命名空间 `Ggj`（例如 `namespace Ggj.Locale`）。
+- **命名空间**：默认不使用自定义命名空间（不写 `namespace ...`），统一使用“默认命名空间”。
 - **模块拆分优先 asmdef**：每个功能一个运行时程序集 +（可选）编辑器程序集 + 测试程序集。
 - **Editor 隔离**：Editor 代码只能放在 `Assets/Editor/` 或 `*.Editor.asmdef`，运行时代码禁止引用 `UnityEditor`。
 - **MonoBehaviour 变薄**：MonoBehaviour 只负责生命周期/Unity 适配；业务逻辑下沉为纯 C#（可 EditMode 测试）。
 推荐目录模板（新增模块时按此落地）：
-- `Assets/Scripts/<Feature>/Runtime/`（含 `<Feature>.Runtime.asmdef`）
+- `Assets/Scripts/<Feature>/`（含 `<Feature>.Runtime.asmdef`）
 - `Assets/Scripts/<Feature>/Editor/`（含 `<Feature>.Editor.asmdef`）
-- `Assets/Scripts/<Feature>/Tests/`（含 `<Feature>.Tests.asmdef`）
+- `Assets/Tests/<Mode>/`（含测试程序集 asmdef）
+
+## 3.1 玩法系统约定（当前版本）
+- **交互系统**：`InteractiveItem` 负责点击/悬停/提示点；交互结果通过“条件 + 动作”组合实现：
+  - 条件：`PickupCondition`（可挂多个，例如 `PuzzleSolvedCondition`）
+  - 动作：`InteractionAction`（例如 `CollectToInventoryAction`、`CompleteLevelAction`、`AcquireMaskAction`）
+- **关卡系统**：关卡内容尽量做成 Prefab，运行时由 `WorldMgr` 下的 `LevelPrefabSwitcher` 动态实例化挂载。
+- **双重世界**：每个关卡 Prefab 内包含 `DualWorldLevel`，并约定两个子节点：`World_NoMask` 与 `World_Mask`。
+- **面具系统**：面具不进入物品栏；拾取后在左侧常驻按钮（Resources 预制体）并允许按空格/点击切换世界。
 
 ## 4. 代码风格规范（C# 9 / Unity）
 ### 4.1 using/import 规则
