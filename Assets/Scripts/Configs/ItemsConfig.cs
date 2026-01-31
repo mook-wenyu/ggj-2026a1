@@ -1,4 +1,4 @@
-﻿public class ItemsConfig : BaseConfig
+public class ItemsConfig : BaseConfig
 {
     /// <summary>
     /// 名称
@@ -12,4 +12,9 @@
     /// 图标资源路径（Resources.Load<Sprite>）
     /// </summary>
     public string iconPath;
+
+    /// <summary>
+    /// 音频资源路径（Resources.Load<AudioClip>）。为空表示该物品无音频。
+    /// </summary>
+    public string audioPath;
 }

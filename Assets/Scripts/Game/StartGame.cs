@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class StartGame : MonoBehaviour
 {
+
+    public Button playGame, exitGame;
 
     void Awake()
     {
@@ -13,7 +16,12 @@ public class StartGame : MonoBehaviour
         PrimeTweenConfig.warnEndValueEqualsCurrent = false;
         PrimeTweenConfig.defaultEase = Ease.Linear;
 
+        playGame.onClick.AddListener(OnStartGame);
+        exitGame.onClick.AddListener(OnExitGame);
 
+        AudioMgr.Instance.Init();
+
+        Utils.initGame = true;
     }
 
     // Start is called before the first frame update
@@ -26,6 +34,11 @@ public class StartGame : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void OnStartGame()
+    {
+        SceneManager.LoadScene("MainScene");
     }
 
     public void OnExitGame()
