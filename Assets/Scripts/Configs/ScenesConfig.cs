@@ -1,4 +1,4 @@
-﻿public class ScenesConfig : BaseConfig
+public class ScenesConfig : BaseConfig
 {
     /// <summary>
     /// 名称

@@ -16,6 +16,9 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
     }
     
     public ItemType itemType = ItemType.Other;
+
+    [Tooltip("物品ID（ItemsConfig.id）。\n填写后：点击会收集到物品栏并弹出统一的物品详情弹窗；同时该物体在场景中消失。")]
+    public string itemId;
     public float hoverScale = 1.1f;
     public float hoverDuration = 0.05f;
     public GameObject uiPrefab;
@@ -197,6 +200,23 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
     private void HandleClick()
     {
         Debug.Log($"Clicked on {itemType} item: {gameObject.name}");
+
+        if (!string.IsNullOrWhiteSpace(itemId))
+        {
+            // 避免强制创建单例 UI；优先使用场景里已存在的 InventoryPanel。
+            var inventoryPanel = Object.FindObjectOfType<InventoryPanel>();
+            if (inventoryPanel != null && inventoryPanel.TryCollectAndOpenFromScene(itemId.Trim()))
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
+            Debug.LogWarning(
+                $"InteractiveItem: 未能打开物品详情（id={itemId}）。" +
+                "请确认场景中存在 InventoryPanel，且物品配置已生成。将回退到旧的 UI 展示。"
+            );
+        }
+
         ShowUI();
     }
     

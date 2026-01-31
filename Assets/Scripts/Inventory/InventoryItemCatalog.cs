@@ -25,23 +25,26 @@ public static class InventoryItemCatalog
         if (!ConfigManager.Has<ItemsConfig>(id))
         {
             // 配置缺失时仍允许收集：避免因为表漏配导致软锁。
-            item = new InventoryItem(id, id, null, null);
+            item = new InventoryItem(id, id, null, null, null, null);
             return true;
         }
 
         var cfg = ConfigManager.Get<ItemsConfig>(id);
         if (cfg == null)
         {
-            item = new InventoryItem(id, id, null, null);
+            item = new InventoryItem(id, id, null, null, null, null);
             return true;
         }
 
         var displayName = cfg.name;
         var description = cfg.desc;
-        var icon = LoadSpriteOrNull(cfg.iconPath);
+        var icon = LoadSpriteOrNull(string.IsNullOrWhiteSpace(cfg.iconPath) ? null : cfg.iconPath.Trim());
         var audioPath = string.IsNullOrWhiteSpace(cfg.audioPath) ? null : cfg.audioPath.Trim();
+        var detailBackground = LoadSpriteOrNull(
+            string.IsNullOrWhiteSpace(cfg.detailBgPath) ? null : cfg.detailBgPath.Trim()
+        );
 
-        item = new InventoryItem(id, displayName, description, icon, audioPath);
+        item = new InventoryItem(id, displayName, description, icon, audioPath, detailBackground);
         return true;
     }
 

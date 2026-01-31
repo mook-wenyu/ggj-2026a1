@@ -1,4 +1,4 @@
-﻿{
+{
   "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[BaseConfig, Assembly-CSharp]], mscorlib",
   "1001": {
     "$type": "ScenesConfig, Assembly-CSharp",

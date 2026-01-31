@@ -27,7 +27,7 @@ public class InventoryPanel : MonoSingleton<InventoryPanel>
     [SerializeField] private bool _autoScrollToNewest = true;
 
     [Header("音频")]
-    [Tooltip("打开物品详情时，若该物品配置了音频，是否自动播放一次。")]
+    [Tooltip("从场景交互打开物品详情时，若该物品配置了音频，是否自动播放一次。\n（物品栏点击默认不自动播放，需手动点重播。）")]
     [SerializeField] private bool _autoPlayItemAudioOnOpen = true;
 
     private readonly Dictionary<string, SlotView> _viewsById = new(StringComparer.Ordinal);
@@ -108,6 +108,33 @@ public class InventoryPanel : MonoSingleton<InventoryPanel>
         }
 
         return InventoryService.State.TryAdd(new InventoryItem(id, displayName, description, icon));
+    }
+
+    /// <summary>
+    /// 供玩法层调用：从“场景交互”打开物品详情。
+    /// - 会将物品加入背包（若已存在则更新/忽略新增）。
+    /// - 若该物品配置了音频，会自动播放一次（受 _autoPlayItemAudioOnOpen 控制）。
+    /// </summary>
+    public bool TryCollectAndOpenFromScene(string id)
+    {
+        EnsureInitialized();
+        SubscribeInventoryEvents();
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            Debug.LogWarning("InventoryPanel.TryCollectAndOpenFromScene 收到空 ID，已忽略");
+            return false;
+        }
+
+        if (!InventoryItemCatalog.TryCreateItem(id, out var item) || item == null)
+        {
+            Debug.LogWarning($"InventoryPanel.TryCollectAndOpenFromScene 找不到物品配置：{id}");
+            return false;
+        }
+
+        InventoryService.State.TryAdd(item);
+        Select(item.Id);
+        ShowItemInfo(item, autoPlayAudio: true);
+        return true;
     }
 
     public void HideItemInfo()
@@ -321,10 +348,11 @@ public class InventoryPanel : MonoSingleton<InventoryPanel>
         }
 
         Select(view.Item.Id);
-        ShowItemInfo(view.Item);
+        // 物品栏点击：不自动播放音频。
+        ShowItemInfo(view.Item, autoPlayAudio: false);
     }
 
-    private void ShowItemInfo(InventoryItem item)
+    private void ShowItemInfo(InventoryItem item, bool autoPlayAudio)
     {
         if (item == null)
         {
@@ -352,7 +380,7 @@ public class InventoryPanel : MonoSingleton<InventoryPanel>
             onReplayClicked
         );
 
-        if (hasAudio && _autoPlayItemAudioOnOpen)
+        if (hasAudio && autoPlayAudio && _autoPlayItemAudioOnOpen)
         {
             audioService.PlayItemAudio(clip);
         }
