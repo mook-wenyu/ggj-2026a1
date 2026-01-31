@@ -9,7 +9,7 @@ public class MainGame : MonoBehaviour
     {
         if (Utils.initGame == false)
         {
-            SceneManager.LoadScene("StartScene");
+            SceneManager.LoadScene(GameSceneNames.StartScene);
         }
     }
 

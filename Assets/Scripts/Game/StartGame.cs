@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class StartGame : MonoBehaviour
 {
 
-    public Button playGame, exitGame;
+    public Button playGame, restartGame, exitGame;
 
     void Awake()
     {
@@ -16,29 +16,40 @@ public class StartGame : MonoBehaviour
         PrimeTweenConfig.warnEndValueEqualsCurrent = false;
         PrimeTweenConfig.defaultEase = Ease.Linear;
 
-        playGame.onClick.AddListener(OnStartGame);
-        exitGame.onClick.AddListener(OnExitGame);
+        if (playGame != null)
+        {
+            playGame.onClick.AddListener(OnStartGame);
+        }
+
+        if (restartGame != null)
+        {
+            restartGame.onClick.AddListener(OnRestartGame);
+        }
+
+        if (exitGame != null)
+        {
+            exitGame.onClick.AddListener(OnExitGame);
+        }
 
         AudioMgr.Instance.Init();
 
         Utils.initGame = true;
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        SceneManager.LoadScene("MainScene");
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void OnStartGame()
     {
-        SceneManager.LoadScene("MainScene");
+        Utils.initGame = true;
+        GameResetService.ResetSession();
+        SceneManager.LoadScene(GameSceneNames.MainScene);
+    }
+
+    public void OnRestartGame()
+    {
+        Utils.initGame = true;
+        GameResetService.ResetSession();
+        GameResetService.ResetProgressForNewGame(keepLanguage: true);
+        SceneManager.LoadScene(GameSceneNames.MainScene);
     }
 
     public void OnExitGame()
