@@ -48,8 +48,36 @@ mkdir Logs
 InventoryPanel.Instance.TryCollect("item_test");
 
 // 或者不依赖 UI
-Ggj.Inventory.InventoryService.TryCollect("item_test");
+InventoryService.TryCollect("item_test");
 ```
+
+提示：当前项目推荐通过 `InteractiveItem + InteractionAction` 组合来驱动“点击收集/弹窗/通关”等行为，避免玩法脚本直接依赖 UI。
+
+## 关卡系统（WorldMgr 动态加载）
+
+目标：每关内容尽量做成 Prefab；运行时挂载到 `WorldMgr` 下，避免主场景膨胀。
+
+- 关卡切换器：`LevelPrefabSwitcher`（推荐挂在 `WorldMgr` 上）
+- 关卡预制体资源：`Resources/Prefabs/Levels/*.prefab`
+
+示例：测试关卡（双重世界）
+
+- 预制体：`Assets/Resources/Prefabs/Levels/TestLevel_DualWorld.prefab`
+- 资源路径：`Prefabs/Levels/TestLevel_DualWorld`（供 `Resources.Load<GameObject>` 使用）
+
+## 双重世界与面具系统
+
+需求：每个关卡都有两个世界（摘下面具/戴上面具不同）；面具不进入物品栏；拾取后生成左侧常驻按钮，支持点击或按空格切换世界。
+
+- 关卡结构：关卡 Prefab 内挂 `DualWorldLevel`，并包含子节点：
+  - `World_NoMask`：摘下面具世界
+  - `World_Mask`：戴上面具世界
+- 面具控制：`MaskWorldController`（推荐挂在 `WorldMgr` 上）
+  - 默认按键：`Space`
+  - 没有面具时不允许切换
+- 面具获取：在场景面具道具上挂 `AcquireMaskAction`（配合 `InteractiveItem`），不会进入物品栏
+- 常驻按钮：`MaskButtonSpawner` 监听获取事件并生成按钮
+  - 按钮预制体：`Assets/Resources/Prefabs/MaskToggleButton.prefab`
 
 ### UI 行为
 
