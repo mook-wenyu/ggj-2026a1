@@ -4,6 +4,7 @@
     "references": [
         "Audio.Core",
         "Decryption.Runtime",
+        "Interaction.Core.Runtime",
         "Level.Runtime",
         "Puzzles.Runtime"
     ],

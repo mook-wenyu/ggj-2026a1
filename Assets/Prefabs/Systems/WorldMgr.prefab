@@ -63,7 +63,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _levelPrefabs: []
   _levelPrefabResourcePaths:
-  - Prefabs/Levels/TestLevel_DualWorld
+  - Prefabs/Levels/Leve_1
   _levelParent: {fileID: 0}
   _startLevelIndex: 0
   _resetPuzzleProgressOnLoad: 1

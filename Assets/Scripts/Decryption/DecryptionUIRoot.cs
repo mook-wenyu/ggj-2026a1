@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// 解密 UI 根节点：统一管理所有解密界面的显示、隐藏与输入阻挡。
 /// 说明：该类不直接依赖 PuzzleProgress 等玩法逻辑，避免 UI 与玩法强耦合。
 /// </summary>
-public sealed class DecryptionUIRoot : MonoSingleton<DecryptionUIRoot>
+public sealed class DecryptionUIRoot : MonoSingleton<DecryptionUIRoot>, IConstellationDecryptionUI
 {
     [Header("引用")]
     [SerializeField] private CanvasGroup _canvasGroup;
@@ -45,7 +45,7 @@ public sealed class DecryptionUIRoot : MonoSingleton<DecryptionUIRoot>
         EnsureInitialized();
     }
 
-    public void ShowConstellationPatternLock(
+    public bool TryShowConstellationPatternLock(
         Action onSolved,
         Action onCancelled = null,
         int[] acceptedPattern1Override = null,
@@ -56,7 +56,7 @@ public sealed class DecryptionUIRoot : MonoSingleton<DecryptionUIRoot>
         if (_constellationPatternLock == null)
         {
             Debug.LogError("DecryptionUIRoot: 未绑定星座解密（GridPatternLock）", this);
-            return;
+            return false;
         }
 
         // 若正在展示其他解密 UI，先关闭（不触发取消回调，避免逻辑重入）。
@@ -69,6 +69,8 @@ public sealed class DecryptionUIRoot : MonoSingleton<DecryptionUIRoot>
         SetVisible(true);
         _constellationPatternLock.Open();
         _isOpen = true;
+
+        return true;
     }
 
     public void CloseCurrent(bool invokeCancelled)

@@ -5,10 +5,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 关卡黑屏过场。
+/// 关卡黑屏过场（全局唯一）。
 /// 职责：提供淡入/淡出黑屏能力；具体“切关卡”流程由更上层的 LevelFlowController 负责。
 /// </summary>
-public sealed class BlackPanel : MonoBehaviour
+public sealed class BlackPanel : MonoSingleton<BlackPanel>
 {
     [Header("引用（可不填，会自动查找/补齐）")]
     [SerializeField] private CanvasGroup _canvasGroup;
@@ -21,6 +21,7 @@ public sealed class BlackPanel : MonoBehaviour
     [SerializeField] private float _fadeDuration = 0.35f;
 
     private Coroutine _fadeRoutine;
+    private bool _initialized;
 
     public bool IsFading => _fadeRoutine != null;
 
@@ -41,6 +42,36 @@ public sealed class BlackPanel : MonoBehaviour
 
     private void Awake()
     {
+        // 允许场景里存在一个实例；若有重复，运行时自动销毁重复项。
+        if (mInstance != null && mInstance != this)
+        {
+            if (Application.isPlaying)
+            {
+                Destroy(gameObject);
+            }
+            return;
+        }
+
+        mInstance = this;
+        EnsureInitialized();
+
+        SetAlphaImmediate(_startHidden ? 0f : 1f);
+    }
+
+    public override void OnSingletonInit()
+    {
+        EnsureInitialized();
+    }
+
+    private void EnsureInitialized()
+    {
+        if (_initialized)
+        {
+            return;
+        }
+
+        _initialized = true;
+
         if (_canvasGroup == null)
         {
             _canvasGroup = GetComponent<CanvasGroup>();
@@ -55,19 +86,13 @@ public sealed class BlackPanel : MonoBehaviour
             _image = GetComponent<Image>();
         }
 
-        if (_image != null)
+        // 兜底：若未配置 Image，也尽量保证黑屏可见。
+        if (_image == null)
         {
-            _image.color = Color.black;
+            _image = gameObject.AddComponent<Image>();
         }
 
-        if (_startHidden)
-        {
-            SetAlphaImmediate(0f);
-        }
-        else
-        {
-            SetAlphaImmediate(1f);
-        }
+        _image.color = Color.black;
     }
 
     public void FadeIn(Action onComplete = null)
@@ -82,6 +107,12 @@ public sealed class BlackPanel : MonoBehaviour
 
     public void FadeTo(float targetAlpha, float duration, Action onComplete = null)
     {
+        EnsureInitialized();
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+        }
+
         if (_fadeRoutine != null)
         {
             StopCoroutine(_fadeRoutine);
@@ -93,6 +124,12 @@ public sealed class BlackPanel : MonoBehaviour
 
     public void SetAlphaImmediate(float alpha)
     {
+        EnsureInitialized();
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+        }
+
         if (_fadeRoutine != null)
         {
             StopCoroutine(_fadeRoutine);

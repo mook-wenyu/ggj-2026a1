@@ -22,12 +22,12 @@ public sealed class LevelFlowController : MonoBehaviour
     {
         if (_blackPanel == null)
         {
-            _blackPanel = FindObjectOfType<BlackPanel>();
+            _blackPanel = BlackPanel.Instance;
         }
 
         if (_levelPanel == null)
         {
-            _levelPanel = FindObjectOfType<LevelPanel>();
+            _levelPanel = LevelPanel.Instance;
         }
 
         _levelSwitcher = ResolveLevelSwitcher();

@@ -5,10 +5,10 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// 下一关界面。
+/// 下一关界面（全局唯一）。
 /// 约定：默认“点击任意位置继续”，也可在 Inspector 绑定按钮。
 /// </summary>
-public sealed class LevelPanel : MonoBehaviour, IPointerClickHandler
+public sealed class LevelPanel : MonoSingleton<LevelPanel>, IPointerClickHandler
 {
     public event Action ContinueRequested;
 
@@ -20,35 +20,33 @@ public sealed class LevelPanel : MonoBehaviour, IPointerClickHandler
     [SerializeField] private bool _startHidden = true;
 
     private bool _subscribed;
+    private bool _initialized;
 
     private void Awake()
     {
-        if (_canvasGroup == null)
+        // 允许场景里存在一个实例；若有重复，运行时自动销毁重复项。
+        if (mInstance != null && mInstance != this)
         {
-            _canvasGroup = GetComponent<CanvasGroup>();
-            if (_canvasGroup == null)
+            if (Application.isPlaying)
             {
-                _canvasGroup = gameObject.AddComponent<CanvasGroup>();
+                Destroy(gameObject);
             }
+            return;
         }
 
-        if (_continueButton == null)
-        {
-            _continueButton = GetComponentInChildren<Button>(true);
-        }
+        mInstance = this;
+        EnsureInitialized();
+        SetVisible(!_startHidden);
+    }
 
-        if (_startHidden)
-        {
-            Hide();
-        }
-        else
-        {
-            Show();
-        }
+    public override void OnSingletonInit()
+    {
+        EnsureInitialized();
     }
 
     private void OnEnable()
     {
+        EnsureInitialized();
         Subscribe();
     }
 
@@ -109,6 +107,12 @@ public sealed class LevelPanel : MonoBehaviour, IPointerClickHandler
 
     private void SetVisible(bool visible)
     {
+        // 场景里常把该面板设置为 inactive；这里确保 Show() 能真正显示。
+        if (visible && !gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+        }
+
         if (_canvasGroup == null)
         {
             gameObject.SetActive(visible);
@@ -118,5 +122,29 @@ public sealed class LevelPanel : MonoBehaviour, IPointerClickHandler
         _canvasGroup.alpha = visible ? 1f : 0f;
         _canvasGroup.interactable = visible;
         _canvasGroup.blocksRaycasts = visible;
+    }
+
+    private void EnsureInitialized()
+    {
+        if (_initialized)
+        {
+            return;
+        }
+
+        _initialized = true;
+
+        if (_canvasGroup == null)
+        {
+            _canvasGroup = GetComponent<CanvasGroup>();
+            if (_canvasGroup == null)
+            {
+                _canvasGroup = gameObject.AddComponent<CanvasGroup>();
+            }
+        }
+
+        if (_continueButton == null)
+        {
+            _continueButton = GetComponentInChildren<Button>(true);
+        }
     }
 }

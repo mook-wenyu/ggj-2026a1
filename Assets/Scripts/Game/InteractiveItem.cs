@@ -36,10 +36,58 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
     {
         _originalScale = transform.localScale;
         _pickupConditions = GetComponents<PickupCondition>();
-        if (_action == null)
+        ResolveActionIfNeeded();
+    }
+
+    private void ResolveActionIfNeeded()
+    {
+        if (_action != null)
         {
-            _action = GetComponent<InteractionAction>();
+            return;
         }
+
+        var actions = GetComponents<InteractionAction>();
+        if (actions == null || actions.Length == 0)
+        {
+            return;
+        }
+
+        if (actions.Length == 1)
+        {
+            _action = actions[0];
+            return;
+        }
+
+        // 当同一物体上存在多个动作时，优先选择“入口动作”。
+        InteractionAction entry = null;
+        foreach (var a in actions)
+        {
+            if (a is not IInteractionEntryAction)
+            {
+                continue;
+            }
+
+            if (entry != null)
+            {
+                Debug.LogError(
+                    $"InteractiveItem: {gameObject.name} 上存在多个入口动作（IInteractionEntryAction），请在 Inspector 显式绑定交互动作（_action）。",
+                    this);
+                return;
+            }
+
+            entry = a;
+        }
+
+        if (entry != null)
+        {
+            _action = entry;
+            return;
+        }
+
+        Debug.LogError(
+            $"InteractiveItem: {gameObject.name} 上存在多个交互动作，请在 Inspector 显式绑定交互动作（_action），" +
+            "或为其中一个动作实现 IInteractionEntryAction 以消除歧义。",
+            this);
     }
 
     private void Start()
