@@ -153,10 +153,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58628dc77f855a544a19a9f849259cfd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemType: 0
+  itemId: item_test
   hoverScale: 1.1
   hoverDuration: 0.2
-  uiPrefab: {fileID: 7375122784115164409, guid: aa49200e29c29e342bb80f2f450e0c40, type: 3}
+  pointPrefab: {fileID: 332040510419979982, guid: 2a095760a528a7547aef4de9b9a68eaf, type: 3}
+  clickHintSize: 0.15
 --- !u!212 &811407873
 SpriteRenderer:
   m_ObjectHideFlags: 0
