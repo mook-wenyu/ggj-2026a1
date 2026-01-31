@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: MemoryFilter
+  m_Shader: {fileID: 4800000, guid: e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _Sepia: 0.6
+    - _Warmth: 0.7
+    - _Fade: 0.25
+    - _Vignette: 0.4
+    - _VignetteSoft: 1.2
+    - _Grain: 0.04
+    - _GrainSpeed: 1.5
+    - _Scanline: 0.03
+    - _ScanSpeed: 0.5
+    - _DriftSpeed: 0.1
+    - _PulseSpeed: 0.3
+    - PixelSnap: 0
+    m_Colors:
+    - _Color: {r: 1, g: 0.95, b: 0.88, a: 0.35}
