@@ -19,11 +19,16 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
     public float hoverScale = 1.1f;
     public float hoverDuration = 0.05f;
     public GameObject uiPrefab;
+    [Tooltip("中心小白点提示预制体，不填则自动加载 Prefabs/point")]
+    public GameObject pointPrefab;
+    [Tooltip("小白点缩放，设为 0 关闭提示")]
+    public float clickHintSize = 0.15f;
     
     private Vector3 originalScale;
     private bool isHovering = false;
     private GameObject currentUI;
     private float uiOpenTime;  // 用于防止打开UI的同一帧被误关闭
+    private GameObject clickHint;  // 中心小白点提示
     
     private void Start()
     {
@@ -78,6 +83,64 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
             {
                 Debug.LogError("Failed to load UI prefab! Please assign it manually in the Inspector.");
             }
+        }
+        
+        if (pointPrefab == null)
+        {
+            #if UNITY_EDITOR
+            pointPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/point.prefab");
+            #endif
+            if (pointPrefab == null)
+                pointPrefab = Resources.Load<GameObject>("point");
+        }
+        
+        CreateClickHint();
+    }
+    
+    private void CreateClickHint()
+    {
+        if (clickHintSize <= 0 || pointPrefab == null) return;
+        
+        if (GetComponent<RectTransform>() != null)
+        {
+            CreateClickHintUI();
+        }
+        else
+        {
+            CreateClickHintWorld();
+        }
+    }
+    
+    private void CreateClickHintUI()
+    {
+        var sr = pointPrefab.GetComponent<SpriteRenderer>();
+        if (sr == null || sr.sprite == null) return;
+        clickHint = new GameObject("ClickHint");
+        clickHint.transform.SetParent(transform, false);
+        var rect = clickHint.AddComponent<RectTransform>();
+        rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        var pixelSize = Mathf.Max(8, clickHintSize * 80f);
+        rect.sizeDelta = new Vector2(pixelSize, pixelSize);
+        var image = clickHint.AddComponent<Image>();
+        image.sprite = sr.sprite;
+        image.color = Color.white;
+        image.raycastTarget = false;
+    }
+    
+    private void CreateClickHintWorld()
+    {
+        clickHint = Instantiate(pointPrefab, transform, false);
+        clickHint.name = "ClickHint";
+        clickHint.transform.localPosition = Vector3.zero;
+        clickHint.transform.localScale = Vector3.one * clickHintSize;
+        clickHint.transform.localRotation = Quaternion.identity;
+        var sr = clickHint.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            var parentSr = GetComponent<SpriteRenderer>();
+            sr.sortingLayerName = parentSr != null ? parentSr.sortingLayerName : "Default";
+            sr.sortingOrder = (parentSr != null ? parentSr.sortingOrder : 0) + 10;
         }
     }
     
