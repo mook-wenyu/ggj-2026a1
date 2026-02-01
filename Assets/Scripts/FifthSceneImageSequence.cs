@@ -13,8 +13,7 @@ public class FifthSceneImageSequence : MonoBehaviour
     [SerializeField] private GameObject _keyObject;
 
     [Header("背景")]
-    [Tooltip("显示三张图片的背景，默认图片一，点击钥匙后切换")]
-    [SerializeField] private Image _backgroundImage;
+    [Tooltip("挂载了 SpriteRenderer 的对象，显示三张图片，默认图片一，点击钥匙后切换")]
     [SerializeField] private SpriteRenderer _backgroundSprite;
 
     [Header("三张精灵图片")]
@@ -83,27 +82,14 @@ public class FifthSceneImageSequence : MonoBehaviour
 
     private void SetBackgroundSprite(Sprite sprite)
     {
-        if (sprite == null) return;
-        if (_backgroundImage != null)
-        {
-            _backgroundImage.sprite = sprite;
-        }
-        if (_backgroundSprite != null)
-        {
-            _backgroundSprite.sprite = sprite;
-        }
+        if (sprite == null || _backgroundSprite == null) return;
+        _backgroundSprite.sprite = sprite;
     }
 
     private void SetBackgroundColor(Color color)
     {
-        if (_backgroundImage != null)
-        {
-            _backgroundImage.color = color;
-        }
-        if (_backgroundSprite != null)
-        {
-            _backgroundSprite.color = color;
-        }
+        if (_backgroundSprite == null) return;
+        _backgroundSprite.color = color;
     }
 
     private void EnsureKeyClickReceiver()
