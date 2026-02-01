@@ -28,6 +28,9 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
     [FormerlySerializedAs("itemId")]
     [SerializeField] private string _legacyItemId;
 
+    [Tooltip("旧版字段：为 true 时只展示物品详情，不会把物品加入背包。")]
+    [SerializeField] private bool _legacyOpenInfoOnly;
+
     private Vector3 _originalScale;
     private GameObject _clickHint;
     private PickupCondition[] _pickupConditions;
@@ -274,6 +277,11 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
     // 支持 UI Image 的点击（需场景中有 EventSystem）
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (!_isUiElement && UiPointerOverDetector.IsPointerOverUi(eventData.position))
+        {
+            return;
+        }
+
         TryInteract();
     }
 
@@ -295,9 +303,7 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
     private static bool IsPointerOverUi()
     {
-        // 统一入口：避免 UI 叠层时“点击 UI 但触发场景物体”的穿透问题。
-        // 参考：Unity 的 OnMouseDown/OnMouseEnter 不会自动考虑 EventSystem。
-        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        return UiPointerOverDetector.IsPointerOverUi();
     }
 
     private void TryInteract()
@@ -349,14 +355,17 @@ public class InteractiveItem : MonoBehaviour, IPointerClickHandler, IPointerEnte
         }
 
         var id = _legacyItemId.Trim();
-        var inventoryPanel = Object.FindObjectOfType<InventoryPanel>();
-        if (inventoryPanel == null)
+        if (!InventoryPanel.TryGetOrCreate(out var inventoryPanel) || inventoryPanel == null)
         {
-            Debug.LogError($"InteractiveItem: 场景中找不到 InventoryPanel，无法打开物品详情弹窗（id={id}）。", this);
+            Debug.LogError($"InteractiveItem: 无法获取/创建 InventoryPanel，无法打开物品详情弹窗（id={id}）。", this);
             return false;
         }
 
-        if (!inventoryPanel.TryCollectAndOpenFromScene(id))
+        var ok = _legacyOpenInfoOnly
+            ? inventoryPanel.TryOpenItemInfoOnlyFromScene(id)
+            : inventoryPanel.TryCollectAndOpenFromScene(id);
+
+        if (!ok)
         {
             Debug.LogError($"InteractiveItem: 打开物品详情失败（id={id}）。", this);
             return false;

@@ -66,10 +66,12 @@ MonoBehaviour:
   _levelPrefabs:
   - {fileID: 5195976509010823212, guid: e5e863ae8dd2c924b84e63e168b06b0f, type: 3}
   - {fileID: 6433389054936019209, guid: ba08ab664588c17499f578f2b9daaf7c, type: 3}
+  - {fileID: 6433389054936019209, guid: b96a99694fd334e43ae9bec089567b03, type: 3}
   _levelPrefabResourcePaths:
   - Prefabs/Levels/Leve_1
   - Prefabs/Levels/Leve_2
-  _levelParent: {fileID: 2785190008293859432}
+  - Prefabs/Levels/Leve_4
+  _levelParent: {fileID: 0}
   _startLevelIndex: 0
   _resetPuzzleProgressOnLoad: 1
 --- !u!114 &3144828584182757765

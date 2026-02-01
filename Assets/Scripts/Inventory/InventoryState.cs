@@ -11,6 +11,11 @@ public sealed class InventoryState
     private readonly Dictionary<string, InventoryItem> _itemsById = new(StringComparer.Ordinal);
 
     /// <summary>
+    /// 背包被清空时触发（例如新开一局/重开）。
+    /// </summary>
+    public event Action Cleared;
+
+    /// <summary>
     /// 新物品进入背包时触发。
     /// </summary>
     public event Action<InventoryItem> ItemAdded;
@@ -34,6 +39,8 @@ public sealed class InventoryState
     {
         _items.Clear();
         _itemsById.Clear();
+
+        Cleared?.Invoke();
     }
 
     public bool Contains(string id)

@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8258017346249158510}
   - component: {fileID: 4559836890505288127}
-  - component: {fileID: 902990825196475711}
   m_Layer: 0
   m_Name: LevelFlowSystem
   m_TagString: Untagged
@@ -48,17 +47,3 @@ MonoBehaviour:
   _blackPanel: {fileID: 0}
   _levelPanel: {fileID: 0}
   _levelSwitcherBehaviour: {fileID: 0}
---- !u!114 &902990825196475711
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2369725124912995298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45e760ac394c6994d8704826121b5e52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _levelRoots: []
-  _startLevelIndex: 0

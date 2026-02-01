@@ -34,19 +34,25 @@ public sealed class LevelFlowController : MonoBehaviour
 
     private void Awake()
     {
-        if (_blackPanel == null)
-        {
-            _blackPanel = BlackPanel.Instance;
-        }
-
-        if (_levelPanel == null)
-        {
-            _levelPanel = LevelPanel.Instance;
-        }
+        // 兼容：若 Inspector 误绑到 Prefab 资源（非场景实例），则该引用不参与运行时。
+        _blackPanel = ResolveSceneInstanceOrNull(_blackPanel) ?? BlackPanel.Instance;
+        _levelPanel = ResolveSceneInstanceOrNull(_levelPanel) ?? LevelPanel.Instance;
+        _levelSwitcherBehaviour = ResolveSceneInstanceOrNull(_levelSwitcherBehaviour);
 
         _levelSwitcher = ResolveLevelSwitcher();
 
         _levelPanel?.Hide();
+    }
+
+    private static T ResolveSceneInstanceOrNull<T>(T component) where T : Component
+    {
+        if (component == null)
+        {
+            return null;
+        }
+
+        var scene = component.gameObject.scene;
+        return scene.IsValid() && scene.isLoaded ? component : null;
     }
 
     public void CompleteLevel()

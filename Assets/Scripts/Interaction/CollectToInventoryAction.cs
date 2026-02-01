@@ -20,10 +20,15 @@ public sealed class CollectToInventoryAction : InteractionAction
         }
 
         var id = _itemId.Trim();
-        var panel = _inventoryPanel != null ? _inventoryPanel : Object.FindObjectOfType<InventoryPanel>();
+        var panel = _inventoryPanel;
         if (panel == null)
         {
-            Debug.LogError($"CollectToInventoryAction: 场景中找不到 InventoryPanel，无法打开物品详情（id={id}）。", context.Target);
+            InventoryPanel.TryGetOrCreate(out panel);
+        }
+
+        if (panel == null)
+        {
+            Debug.LogError($"CollectToInventoryAction: 无法获取/创建 InventoryPanel，无法打开物品详情（id={id}）。", context.Target);
             return false;
         }
 

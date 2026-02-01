@@ -1,6 +1,7 @@
 using System.Collections;
 
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 开场叙事：在第一关开始前展示“快递-面具”文案，并授予面具能力。
@@ -11,16 +12,16 @@ using UnityEngine;
 public sealed class GamePrologueController : MonoBehaviour
 {
     private const string PrologueCompletedKeyPrefix = "Game.Prologue.Completed";
-    private const string DefaultPopupPrefabResourcePath = "Prefabs/ItemInfoPopup";
+    private const string DefaultPopupPrefabResourcePath = "Prefabs/ProloguePopup";
     private const string DefaultGiftObjectName = "gift";
     private const int DefaultPrologueVersion = 2;
 
     [Header("引用（可不填，会自动查找/加载）")]
     [SerializeField] private MaskWorldController _maskController;
     [SerializeField] private Canvas _rootCanvas;
-    [SerializeField] private ItemInfoPopupView _popupPrefab;
+    [SerializeField] private ProloguePopupView _popupPrefab;
 
-    [Tooltip("开场纯黑背景（可选）。用于在文案与 gift 动画阶段都保持纯黑背景，同时不遮挡 gift（SpriteRenderer）。")]
+    [Tooltip("开场纯黑背景（可选，必须是 UI：Image）。仅用于文案阶段保持纯黑背景，避免遮挡开场文本。")]
     [SerializeField] private GameObject _prologueBackdrop;
 
     [Tooltip("礼物动画的 Animator。不填则按名称 gift 自动查找。")]
@@ -53,13 +54,13 @@ public sealed class GamePrologueController : MonoBehaviour
     [Header("表现")]
     [Tooltip("阅读文案时遮罩透明度（0=不遮罩，1=纯黑）。")]
     [Range(0f, 1f)]
-    [SerializeField] private float _overlayAlphaWhenReading = 0.6f;
+    [SerializeField] private float _overlayAlphaWhenReading = 1f;
 
-    [Tooltip("播放礼物动画时遮罩透明度（建议 0，保证能看清动画）。")]
+    [Tooltip("播放礼物动画时遮罩透明度（建议 0：保证能看清动画）。")]
     [Range(0f, 1f)]
     [SerializeField] private float _overlayAlphaWhenPlayingGift = 0f;
 
-    private ItemInfoPopupView _popupInstance;
+    private ProloguePopupView _popupInstance;
     private bool _started;
 
     private string _completedKey;
@@ -68,8 +69,6 @@ public sealed class GamePrologueController : MonoBehaviour
     private GiftAnimationPlayer _giftPlayer;
     private Coroutine _giftRoutine;
 
-    private static Sprite s_solidSprite;
-
     private void Awake()
     {
         _completedKey = BuildCompletedKey();
@@ -77,6 +76,7 @@ public sealed class GamePrologueController : MonoBehaviour
         EnsureGiftPlayer();
         _giftPlayer?.HideImmediate();
         SetPrologueBackdropActive(false);
+
     }
 
     private void Start()
@@ -138,6 +138,9 @@ public sealed class GamePrologueController : MonoBehaviour
             yield break;
         }
 
+        // 目标：黑底盖住物品栏，但文字在黑底之上。
+        EnsureReadingLayering();
+
         if (!_stateModel.TryBegin())
         {
             SetPrologueBackdropActive(false);
@@ -166,6 +169,9 @@ public sealed class GamePrologueController : MonoBehaviour
         _popupInstance.SetCloseInteractable(false);
         _popupInstance.SetPanelVisible(false);
         _popupInstance.SetOverlayAlpha(_overlayAlphaWhenPlayingGift);
+
+        // 礼物动画阶段不需要黑底；同时由弹窗遮罩（可为 0 透明）拦截场景交互。
+        SetPrologueBackdropActive(false);
 
         EnsureGiftPlayer();
         _giftRoutine = StartCoroutine(PlayGiftThenWaitConfirmRoutine());
@@ -228,22 +234,88 @@ public sealed class GamePrologueController : MonoBehaviour
 
     private void EnsureReferences()
     {
-        if (_maskController == null)
+        if (_maskController == null || !IsInLoadedScene(_maskController))
         {
             _maskController = Object.FindObjectOfType<MaskWorldController>();
         }
 
-        if (_rootCanvas == null)
+        if (_rootCanvas == null || !IsInLoadedScene(_rootCanvas))
         {
             _rootCanvas = Object.FindObjectOfType<Canvas>();
+        }
+
+        if (_giftAnimator != null && !IsInLoadedScene(_giftAnimator))
+        {
+            _giftAnimator = null;
+        }
+    }
+
+    private void EnsureReadingLayering()
+    {
+        if (_rootCanvas == null)
+        {
+            return;
+        }
+
+        // 目标：背景盖住物品栏，但文字在背景之上。
+        // 做法：把背景移动到画布顶层，再把文字弹窗移动到顶层（文字自然在背景之上）。
+        if (_prologueBackdrop != null && _prologueBackdrop.transform.parent == _rootCanvas.transform)
+        {
+            _prologueBackdrop.transform.SetAsLastSibling();
+        }
+
+        if (_popupInstance != null && _popupInstance.transform.parent == _rootCanvas.transform)
+        {
+            _popupInstance.transform.SetAsLastSibling();
         }
     }
 
     private void SetPrologueBackdropActive(bool active)
     {
-        if (active && _prologueBackdrop == null)
+        if (_prologueBackdrop != null && !IsInLoadedScene(_prologueBackdrop))
         {
-            _prologueBackdrop = CreateRuntimeBackdrop();
+            _prologueBackdrop = null;
+        }
+
+        if (active)
+        {
+            EnsureReferences();
+
+            if (_rootCanvas == null)
+            {
+                Debug.LogError("GamePrologueController: 场景中找不到 Canvas，无法创建 PrologueBackdrop。", this);
+            }
+            else
+            {
+                // 约束：黑底必须是 UI（RectTransform + Image），否则容易盖住弹窗文本。
+                if (_prologueBackdrop != null
+                    && (_prologueBackdrop.GetComponent<RectTransform>() == null
+                        || _prologueBackdrop.GetComponent<Image>() == null))
+                {
+                    Debug.LogWarning(
+                        "GamePrologueController: PrologueBackdrop 必须是 UI（RectTransform/Image），已忽略该引用并改为运行时创建。",
+                        this
+                    );
+                    _prologueBackdrop = null;
+                }
+
+                if (_prologueBackdrop != null && _prologueBackdrop.transform.parent != _rootCanvas.transform)
+                {
+                    // 兜底：保证黑底与弹窗处于同一个 Canvas 下，避免层级错乱。
+                    _prologueBackdrop.transform.SetParent(_rootCanvas.transform, worldPositionStays: false);
+                }
+
+                if (_prologueBackdrop == null)
+                {
+                    _prologueBackdrop = CreateRuntimeBackdrop(_rootCanvas.transform);
+                }
+
+                if (_prologueBackdrop != null && _prologueBackdrop.transform.parent == _rootCanvas.transform)
+                {
+                    // 先放到顶层（盖住物品栏），再由 EnsureReadingLayering() 把文字弹窗放到其上方。
+                    _prologueBackdrop.transform.SetAsLastSibling();
+                }
+            }
         }
 
         if (_prologueBackdrop != null)
@@ -252,46 +324,46 @@ public sealed class GamePrologueController : MonoBehaviour
         }
     }
 
-    private GameObject CreateRuntimeBackdrop()
+    private static bool IsInLoadedScene(Component component)
     {
-        // 兜底：若场景未显式配置开场黑底，则运行时创建一个。
-        // 这样既能满足“开场纯黑背景”的需求，也不阻塞关卡实例化。
-        var go = new GameObject("PrologueBackdrop");
-        go.transform.SetParent(transform, worldPositionStays: false);
-        go.transform.localPosition = Vector3.zero;
-        go.transform.localRotation = Quaternion.identity;
-        go.transform.localScale = new Vector3(100f, 100f, 1f);
+        if (component == null)
+        {
+            return false;
+        }
 
-        var sr = go.AddComponent<SpriteRenderer>();
-        sr.sprite = GetSolidSprite();
-        sr.color = Color.black;
-        sr.sortingLayerName = "UI";
-        sr.sortingOrder = 49;
+        var scene = component.gameObject.scene;
+        return scene.IsValid() && scene.isLoaded;
+    }
+
+    private static bool IsInLoadedScene(GameObject gameObject)
+    {
+        if (gameObject == null)
+        {
+            return false;
+        }
+
+        var scene = gameObject.scene;
+        return scene.IsValid() && scene.isLoaded;
+    }
+
+    private static GameObject CreateRuntimeBackdrop(Transform canvasTransform)
+    {
+        // 兜底：若场景未显式配置开场黑底，则运行时创建一个全屏 UI Image。
+        var go = new GameObject("PrologueBackdrop", typeof(RectTransform), typeof(Image));
+        go.transform.SetParent(canvasTransform, worldPositionStays: false);
+
+        var rt = go.GetComponent<RectTransform>();
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+
+        var img = go.GetComponent<Image>();
+        img.color = Color.black;
+        img.raycastTarget = false;
 
         go.SetActive(false);
         return go;
-    }
-
-    private static Sprite GetSolidSprite()
-    {
-        if (s_solidSprite != null)
-        {
-            return s_solidSprite;
-        }
-
-        var tex = new Texture2D(1, 1, TextureFormat.RGBA32, mipChain: false);
-        tex.SetPixel(0, 0, Color.white);
-        tex.Apply(updateMipmaps: false, makeNoLongerReadable: true);
-        tex.wrapMode = TextureWrapMode.Clamp;
-        tex.filterMode = FilterMode.Point;
-
-        s_solidSprite = Sprite.Create(
-            tex,
-            new Rect(0f, 0f, 1f, 1f),
-            new Vector2(0.5f, 0.5f),
-            pixelsPerUnit: 1f
-        );
-        return s_solidSprite;
     }
 
     private void EnsureGiftPlayer()
@@ -333,13 +405,13 @@ public sealed class GamePrologueController : MonoBehaviour
         if (prefab == null)
         {
             var prefabGo = Resources.Load<GameObject>(DefaultPopupPrefabResourcePath);
-            prefab = prefabGo != null ? prefabGo.GetComponent<ItemInfoPopupView>() : null;
+            prefab = prefabGo != null ? prefabGo.GetComponent<ProloguePopupView>() : null;
         }
 
         if (prefab == null)
         {
             Debug.LogError(
-                "GamePrologueController: 找不到弹窗预制体。请在 Inspector 绑定 _popupPrefab，" +
+                "GamePrologueController: 找不到开场弹窗预制体。请在 Inspector 绑定 _popupPrefab，" +
                 $"或确保 Resources/{DefaultPopupPrefabResourcePath}.prefab 存在。",
                 this
             );

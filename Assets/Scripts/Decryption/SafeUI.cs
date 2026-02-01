@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,10 +8,13 @@ using UnityEngine.UI;
 /// <summary>
 /// 保险柜UI：第一重密码为4位数字(1027)，第二重密码为3个滚盘(▲●▲)。
 /// </summary>
-public class SafeUI : MonoBehaviour
+public sealed class SafeUI : MonoBehaviour
 {
     private const string FirstPassword = "1027";
     private static readonly char[] Symbols = { '■', '▲', '●' };
+
+    public event Action Solved;
+    public event Action Cancelled;
 
     [Header("第一重密码")]
     [SerializeField] private Button[] _numberButtons;
@@ -22,6 +27,8 @@ public class SafeUI : MonoBehaviour
 
     private readonly List<char> _firstInput = new List<char>(4);
     private readonly int[] _rollerStates = { 0, 0, 0 };
+
+    private bool _solvedThisSession;
 
     private void Awake()
     {
@@ -91,10 +98,10 @@ public class SafeUI : MonoBehaviour
         var input = new string(_firstInput.ToArray());
         if (input != FirstPassword)
         {
-            Close();
+            CloseAsCancelled();
             return;
         }
-        Debug.Log("保险柜第一重密码正确");
+        Debug.Log("保险柜第一重密码正确", this);
     }
 
     private void OnRollerClicked(int index)
@@ -112,16 +119,36 @@ public class SafeUI : MonoBehaviour
     {
         if (_rollerStates[0] != 1 || _rollerStates[1] != 2 || _rollerStates[2] != 1)
             return;
-        Debug.Log("保险柜第二重密码正确");
+
+        _solvedThisSession = true;
+        Debug.Log("保险柜第二重密码正确", this);
+        Solved?.Invoke();
+        CloseInternal();
     }
 
     private void Close()
+    {
+        CloseAsCancelled();
+    }
+
+    private void CloseAsCancelled()
+    {
+        if (!_solvedThisSession)
+        {
+            Cancelled?.Invoke();
+        }
+
+        CloseInternal();
+    }
+
+    private void CloseInternal()
     {
         gameObject.SetActive(false);
     }
 
     private void OnEnable()
     {
+        _solvedThisSession = false;
         _firstInput.Clear();
         for (int i = 0; i < _rollerStates.Length; i++)
             _rollerStates[i] = 0;
