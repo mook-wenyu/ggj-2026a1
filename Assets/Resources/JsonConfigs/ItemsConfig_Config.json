@@ -1,0 +1,39 @@
+{
+  "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[BaseConfig, Assembly-CSharp]], mscorlib",
+  "101": {
+    "$type": "ItemsConfig, Assembly-CSharp",
+    "name": "童年的蜡笔画",
+    "desc": null,
+    "iconPath": "图片资源/画",
+    "audioPath": "",
+    "detailBgPath": "",
+    "id": "101"
+  },
+  "102": {
+    "$type": "ItemsConfig, Assembly-CSharp",
+    "name": "泛黄的日历",
+    "desc": null,
+    "iconPath": "图片资源/日历",
+    "audioPath": null,
+    "detailBgPath": null,
+    "id": "102"
+  },
+  "103": {
+    "$type": "ItemsConfig, Assembly-CSharp",
+    "name": "尘封的奖杯",
+    "desc": null,
+    "iconPath": "图片资源/奖杯特写",
+    "audioPath": null,
+    "detailBgPath": null,
+    "id": "103"
+  },
+  "104": {
+    "$type": "ItemsConfig, Assembly-CSharp",
+    "name": "钥匙",
+    "desc": null,
+    "iconPath": "图片资源/3",
+    "audioPath": null,
+    "detailBgPath": null,
+    "id": "104"
+  }
+}

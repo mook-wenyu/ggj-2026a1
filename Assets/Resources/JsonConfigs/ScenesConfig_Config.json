@@ -1,0 +1,63 @@
+{
+  "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[BaseConfig, Assembly-CSharp]], mscorlib",
+  "1001": {
+    "$type": "ScenesConfig, Assembly-CSharp",
+    "sceneName": "客厅",
+    "imgRoad": "",
+    "memoID": [
+      "1001",
+      "1005",
+      "1006",
+      "1008"
+    ],
+    "id": "1001"
+  },
+  "1002": {
+    "$type": "ScenesConfig, Assembly-CSharp",
+    "sceneName": "浴室",
+    "imgRoad": "",
+    "memoID": [
+      "1002",
+      "1004",
+      "1009"
+    ],
+    "id": "1002"
+  },
+  "1003": {
+    "$type": "ScenesConfig, Assembly-CSharp",
+    "sceneName": "卧室",
+    "imgRoad": "",
+    "memoID": [
+      "1003",
+      "1007",
+      "1010"
+    ],
+    "id": "1003"
+  },
+  "1004": {
+    "$type": "ScenesConfig, Assembly-CSharp",
+    "sceneName": "池塘",
+    "imgRoad": "",
+    "memoID": [
+      "1011",
+      "1012",
+      "1015",
+      "1019",
+      "1020"
+    ],
+    "id": "1004"
+  },
+  "1005": {
+    "$type": "ScenesConfig, Assembly-CSharp",
+    "sceneName": "花园",
+    "imgRoad": "",
+    "memoID": [
+      "1013",
+      "1014",
+      "1016",
+      "1017",
+      "1018"
+    ],
+    "id": "1005"
+  }
+}

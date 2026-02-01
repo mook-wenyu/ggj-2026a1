@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 3035236352675507367}
   - component: {fileID: 8528078050213747241}
   - component: {fileID: 6854220157008522746}
+  - component: {fileID: 4335810199978639600}
+  - component: {fileID: 4582979793629116514}
   m_Layer: 0
   m_Name: "\u53EF\u4EA4\u4E92\u7269\u54C1"
   m_TagString: Untagged
@@ -29,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -7.309, y: -3.977, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9103, y: 0.8957, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -72,10 +74,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1481022675
+  m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: db87cbe93a9c7ae4893ebf8d67a0bf0c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -118,18 +120,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.008021355, y: -0.0016303957}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 2.02, y: 1.69}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2.0042787, y: 1.6945624}
   m_EdgeRadius: 0
 --- !u!114 &6854220157008522746
 MonoBehaviour:
@@ -148,5 +150,35 @@ MonoBehaviour:
   pointPrefab: {fileID: 332040510419979982, guid: 2a095760a528a7547aef4de9b9a68eaf, type: 3}
   clickHintSize: 0.15
   _action: {fileID: 0}
-  _disableOnSuccess: 1
-  _legacyItemId: item_test
+  _disableOnSuccess: 0
+  _legacyItemId: 
+  _legacyOpenInfoOnly: 0
+--- !u!114 &4335810199978639600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 547184840680011307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a60eab9ab12485749bd9a493881a7701, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _decryptionUiBehaviour: {fileID: 0}
+  _onSolvedAction: {fileID: 4582979793629116514}
+  _onCancelledAction: {fileID: 0}
+--- !u!114 &4582979793629116514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 547184840680011307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172b2f8a91609c84f9737f729ccf7bca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _itemId: 103
+  _inventoryPanel: {fileID: 0}
